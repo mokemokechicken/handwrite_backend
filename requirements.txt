@@ -1,0 +1,12 @@
+PIL==1.1.7
+PyMySQL==0.5
+SQLAlchemy==0.7.9
+Theano==0.6.0rc2
+distribute==0.6.28
+git-remote-helpers==0.1.0
+matplotlib==1.2.0
+mock==1.0.1
+nose==1.2.1
+numpy==1.6.2
+scipy==0.11.0
+wsgiref==0.1.2
