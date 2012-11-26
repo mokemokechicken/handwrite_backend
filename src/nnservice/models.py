@@ -6,7 +6,7 @@ Created on 2012/11/26
 '''
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.schema import Column
+from sqlalchemy.schema import Column, Sequence
 import sqlalchemy.types as t
 
 Base = declarative_base()
@@ -14,7 +14,7 @@ Base = declarative_base()
 class LearnData(Base):
     __tablename__ = "learn_data"
     
-    id = Column(t.Integer, primary_key=True)
+    id = Column(t.Integer, Sequence('learn_data_id_seq'), primary_key=True)
     name = Column(t.String(256))
     generation = Column(t.Integer)
     num_in = Column(t.Integer)

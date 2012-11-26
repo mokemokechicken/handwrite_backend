@@ -5,6 +5,7 @@
 .settings
 *.swp
 
+nnservice.db
+
 venv
-sqlite.db
 
