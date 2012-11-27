@@ -46,7 +46,7 @@ from mlp import HiddenLayer
 from dA import dA
 
 from state_persistent import StatePersistent, load_params, save_params
-from prjlib.learning import evaluate_model
+from learning import evaluate_model
 
 
 class SdA(StatePersistent):

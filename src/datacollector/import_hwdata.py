@@ -5,9 +5,12 @@ Created on 2012/11/26
 @author: k_morishita
 '''
 
-
-from datacollector import extapi
+from __future__ import with_statement
 import csv
+import gzip
+from tempfile import NamedTemporaryFile
+
+from . import extapi
 from prjlib.dataset.class_sampling import ClassSampling
 
 class ImportHWData(object):
@@ -21,7 +24,21 @@ class ImportHWData(object):
         self.api = extapi.HWDataAPI()
         body, info = self.api.get_data()
         reader = csv.reader(body)
-        classify_fields=range(info["numin"]+1, info["numin"]+info["numout"]+1)
+        range_x = (1, info["numin"]+1)
+        range_y = (info["numin"]+1, info["numin"]+info["numout"]+1)
         with ClassSampling() as cs:
-            train, validate, test = cs.sampling(reader, [8,1,1], classify_fields)
+            trainset, validateset, testset = cs.sampling(reader, [8,1,1], range_y)
+            tmpfile = NamedTemporaryFile()
+            iostream = gzip.GzipFile(fileobj=tmpfile, mode="wb")
+            self.serialize(iostream, trainset, range_x, range_y)
+            self.serialize(iostream, validateset, range_x, range_y)
+            self.serialize(iostream, testset, range_x, range_y)
+            iostream.close()
+            #
+            tmpfile.seek(0)
+            self.store_dataset(tmpfile)
+    
+    def serialize(self, iostream, dataset, range_x, range_y):
+        pass
+
 
