@@ -9,6 +9,7 @@ import urllib2
 import gzip
 import logging
 from nnservice import settings
+import tempfile
 
 class ExtAPIBase(object):
     def __init__(self, endpoint, timeout=7200):
@@ -24,10 +25,13 @@ class ExtAPIBase(object):
         """
         request = urllib2.Request(self.endpoint, headers={"Accept-Encoding": "gzip"})
         res = urllib2.urlopen(request, timeout=self.timeout)
+        fileobj = tempfile.TemporaryFile()
+        fileobj.write(res.read())
+        fileobj.seek(0)
         headers = res.headers
         if headers.get('content-encoding') == "gzip":
-            res = gzip.GzipFile(fileobj=res, mode="r")
-        return res, headers
+            fileobj = gzip.GzipFile(fileobj=fileobj, mode="rb")
+        return fileobj, headers
 
 class HWDataAPI(ExtAPIBase):
     def __init__(self, **kw):

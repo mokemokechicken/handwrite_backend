@@ -45,7 +45,7 @@ class ClassSampling(object):
         for fout in output_files:
             fout.flush()
             fout.seek(0)
-        self.output_files = output_files 
+        self.output_files = output_files
         return [csv.reader(f) for f in output_files]
 
     def split_data(self, csv_reader, classify_fields):
@@ -53,13 +53,17 @@ class ClassSampling(object):
         splited_files = {}
         splited_numrow = {}
         for row in csv_reader:
-            clsstr = SP.join([str(x) for x in row[classify_fields[0]:classify_fields[1]]])
+            if classify_fields:
+                clsstr = SP.join([str(x) for x in row[classify_fields[0]:classify_fields[1]]])
+            else:
+                clsstr = "default"
             if clsstr not in splited_files:
                 splited_files[clsstr] = TemporaryFile()
                 splited_numrow[clsstr] = 0
             splited_files[clsstr].write(",".join([str(x) for x in row]) + "\n")
             splited_numrow[clsstr] += 1
         retlist = []
+        print splited_numrow
         for clsstr in splited_files.keys():
             splited_files[clsstr].seek(0)
             retlist.append((splited_files[clsstr], splited_numrow[clsstr]))
