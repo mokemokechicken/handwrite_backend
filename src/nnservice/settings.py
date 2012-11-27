@@ -20,3 +20,9 @@ DATABASE = {
 
 DATABASE_FILE_DIR = THIS_DIR
 
+DATA_SERVER = "localhost:8000"
+
+ENDPOINTS = {
+             "hw_numbers": "http://%s/data/api/hw_numbers" % DATA_SERVER,
+             
+             }
