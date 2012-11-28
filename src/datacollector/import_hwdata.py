@@ -17,6 +17,8 @@ import theano
 import theano.tensor as T
 from cPickle import load, dump, HIGHEST_PROTOCOL
 from nnservice.models import LearnData
+from nnservice.repositories import LearnDataRepository
+from nnservice.db import NNDatabase
 
 class ImportHWData(object):
     """Web IF からデータを受信して、Theano用にフォーマット変更して保存する
@@ -29,8 +31,8 @@ class ImportHWData(object):
         self.api = extapi.HWDataAPI()
         body, info = self.api.get_data()
         reader = csv.reader(body)
-        range_x = (1, info["numin"]+1)
-        range_y = (info["numin"]+1, info["numin"]+info["numout"]+1)
+        range_x = (1, info["num_in"]+1)
+        range_y = (info["num_in"]+1, info["num_in"]+info["num_out"]+1)
         with ClassSampling() as cs:
             #trainset, validateset, testset = cs.sampling(reader, [8,1,1], range_y)
             trainset, validateset, testset = cs.sampling(reader, [8,1,1], None)
@@ -45,7 +47,7 @@ class ImportHWData(object):
             iostream.close()
             #
             tmpfile.seek(0)
-            self.store_dataset(tmpfile)
+            self.store_dataset(tmpfile, info)
     
     def serialize(self, out_array, dataset, range_x, range_y):
         """
@@ -67,12 +69,19 @@ class ImportHWData(object):
         ys = theano.shared(numpy.asarray(yarray, dtype=T.dscalar), borrow=True)
         out_array.append((xs,ys))
 
-    def store_dataset(self, fileobj):
+    def store_dataset(self, fileobj, info):
         """store into database"""
-        open("/tmp/a.gz", "wb").write(fileobj.read())
+        repo = LearnDataRepository(NNDatabase())
         model = LearnData()
         model.name = self.api.typename
-        
+        model.generation = repo.count_number_of_name(model.name) + 1
+        model.num_in = info["num_in"]
+        model.num_out = info["num_out"]
+        model.num_row = info["num_row"]
+        model.data = fileobj.read()
+        repo.add(model)
+        open("/tmp/a.gz", "wb").write(model.data)
+
 
 if __name__ == "__main__":
     ImportHWData().run()

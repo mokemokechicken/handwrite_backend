@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from . import models
 from sqlalchemy.sql.expression import func
+import datetime
 
 
 class LearnDataRepository(object):
@@ -23,6 +24,7 @@ class LearnDataRepository(object):
     
     def add(self, model, session=None, autocommit=True):
         session = session or self.db.Session()
+        model.create_datetime = datetime.datetime.now()
         session.add(model)
         if autocommit:
             session.commit()

@@ -47,9 +47,9 @@ class HWDataAPI(ExtAPIBase):
         try:
             body_filelike, headers = self._fetch_data()
             return body_filelike, {
-                          "numin":  int(headers['x-learndata-innodeqty']),
-                          "numout": int(headers['x-learndata-outnodeqty']),
-                          "numrow": int(headers['x-learndata-rowqty'])
+                          "num_in":  int(headers['x-learndata-innodeqty']),
+                          "num_out": int(headers['x-learndata-outnodeqty']),
+                          "num_row": int(headers['x-learndata-rowqty'])
                           }
         except IOError, e:
             logging.error(repr(e))

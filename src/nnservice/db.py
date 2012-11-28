@@ -59,6 +59,10 @@ class NNDatabase(object):
         return self._Session
     Session = property(_get_Session)
     
+    def close(self):
+        pass
+        
+    
 
 if __name__ == '__main__':
     def is_subclass(x, cls):
