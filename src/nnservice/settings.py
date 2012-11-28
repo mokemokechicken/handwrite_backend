@@ -26,3 +26,10 @@ ENDPOINTS = {
              "hw_numbers": "http://%s/data/api/hw_numbers" % DATA_SERVER,
              
              }
+
+NNMACHINE_TYPES = {
+                       "hw_numbers": [
+                           {"type": "dbn", "hiddens": [50, 50], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [50],     "suffix": "", "option": {}},
+                       ],
+                  }

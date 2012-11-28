@@ -44,7 +44,7 @@ class LearnDataRepositoryTest(TestCase):
         self.assertEquals(4, m.num_out)
         self.assertEquals(5, m.num_row)
         self.assertEquals("XXXX", m.data)
-        self.assertEquals(dt, m.create_datetime)
+        self.assertTrue(dt <= m.create_datetime <= datetime.datetime.now())
     
     def test_count(self):
         self.obj.add(LearnData(name="hoge"))
@@ -55,5 +55,15 @@ class LearnDataRepositoryTest(TestCase):
         self.assertEquals(1, self.obj.count_number_of_name("moke"))
         self.assertEquals(0, self.obj.count_number_of_name("hogehoge"))
 
+    def test_get(self):
+        self.obj.add(LearnData(name="hoge", generation=1))
+        self.obj.add(LearnData(name="hoge", generation=2))
+        self.obj.add(LearnData(name="moke", generation=1))
+        
+        self.assertEquals(2, self.obj.get("hoge", 2).generation)
+        self.assertEquals(1, self.obj.get("hoge", 1).generation)
+        self.assertEquals(2, self.obj.get("hoge").generation)
+        self.assertEquals(1, self.obj.get("moke").generation)
+        
 
     

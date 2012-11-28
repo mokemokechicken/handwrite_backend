@@ -34,5 +34,13 @@ class LearnDataRepository(object):
         result = session.query(func.count(self.modelClass.id)).filter_by(name=typename)
         return int(result[0][0])
         
-    
+    def get(self, typename, generation=None):
+        session = self.db.Session()
+        if generation is None:
+            q = session.query(self.modelClass).filter_by(name=typename).order_by(self.modelClass.generation.desc()).first()
+        else:
+            q = session.query(self.modelClass).filter_by(name=typename, generation=generation).one()
+
+        return q
+
     
