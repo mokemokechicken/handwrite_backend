@@ -34,8 +34,7 @@ class ImportHWData(object):
         range_x = (1, info["num_in"]+1)
         range_y = (info["num_in"]+1, info["num_in"]+info["num_out"]+1)
         with ClassSampling() as cs:
-            #trainset, validateset, testset = cs.sampling(reader, [8,1,1], range_y)
-            trainset, validateset, testset = cs.sampling(reader, [8,1,1], None)
+            trainset, validateset, testset = cs.sampling(reader, [8,1,1], range_y)
             out_array = []
             self.serialize(out_array, trainset, range_x, range_y)
             self.serialize(out_array, validateset, range_x, range_y)
@@ -48,6 +47,7 @@ class ImportHWData(object):
             #
             tmpfile.seek(0)
             self.store_dataset(tmpfile, info)
+        return info
     
     def serialize(self, out_array, dataset, range_x, range_y):
         """
@@ -60,7 +60,6 @@ class ImportHWData(object):
         xarray = []
         yarray = []
         for row in dataset:
-            print row
             x = [float(v) for v in row[range_x[0]:range_x[1]]]
             y = [float(v) for v in row[range_y[0]:range_y[1]]]
             xarray.append(x)
@@ -80,8 +79,6 @@ class ImportHWData(object):
         model.num_row = info["num_row"]
         model.data = fileobj.read()
         repo.add(model)
-        open("/tmp/a.gz", "wb").write(model.data)
-
 
 if __name__ == "__main__":
-    ImportHWData().run()
+    print "Imported %s" % ImportHWData().run()

@@ -63,7 +63,6 @@ class ClassSampling(object):
             splited_files[clsstr].write(",".join([str(x) for x in row]) + "\n")
             splited_numrow[clsstr] += 1
         retlist = []
-        print splited_numrow
         for clsstr in splited_files.keys():
             splited_files[clsstr].seek(0)
             retlist.append((splited_files[clsstr], splited_numrow[clsstr]))
