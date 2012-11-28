@@ -21,6 +21,7 @@ class LearnData(Base):
     num_out = Column(t.Integer)
     num_row = Column(t.Integer)
     data = Column(t.BLOB)
+    create_datetime = Column(t.DateTime)
 
     def __repr__(self):
         return "<LearnData(%s,%s,%s,%s,%s,%s)>" % (self.id, self.name, self.generation, self.num_in,

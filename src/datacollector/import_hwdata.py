@@ -16,6 +16,7 @@ import numpy
 import theano
 import theano.tensor as T
 from cPickle import load, dump, HIGHEST_PROTOCOL
+from nnservice.models import LearnData
 
 class ImportHWData(object):
     """Web IF からデータを受信して、Theano用にフォーマット変更して保存する
@@ -69,6 +70,9 @@ class ImportHWData(object):
     def store_dataset(self, fileobj):
         """store into database"""
         open("/tmp/a.gz", "wb").write(fileobj.read())
+        model = LearnData()
+        model.name = self.api.typename
+        
 
 if __name__ == "__main__":
     ImportHWData().run()

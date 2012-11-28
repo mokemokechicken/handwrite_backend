@@ -12,8 +12,9 @@ from nnservice import settings
 import tempfile
 
 class ExtAPIBase(object):
-    def __init__(self, endpoint, timeout=7200):
-        self.endpoint = endpoint
+    typename = None
+    def __init__(self, endpoint = None, timeout=7200):
+        self.endpoint = endpoint or settings.ENDPOINTS[self.typename]
         self.timeout = timeout
     
     def _fetch_data(self):
@@ -34,9 +35,8 @@ class ExtAPIBase(object):
         return fileobj, headers
 
 class HWDataAPI(ExtAPIBase):
-    def __init__(self, **kw):
-        super(HWDataAPI, self).__init__(settings.ENDPOINTS["hw_numbers"], **kw)
-        
+    typename = "hw_numbers"
+
     def get_data(self):
         """
         
