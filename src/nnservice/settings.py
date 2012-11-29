@@ -13,7 +13,7 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 DATABASE = {
             "schema": "sqlite",
             "host": "",
-            "name": "nnservice.db",
+            "name": "nn.db",
             "user": "",
             "pass": "",
             }
@@ -24,21 +24,13 @@ DATA_SERVER = "localhost:8000"
 
 ENDPOINTS = {
              "hw_numbers": "http://%s/data/api/hw_numbers" % DATA_SERVER,
-             
              }
 
 NNMACHINE_TYPES = {
                        "hw_numbers": [
-                           #{"type": "dbn", "hiddens": [50,50], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [9], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [8], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [7], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [6], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [5], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [4], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [3], "suffix": "", "option": {}},
-#                           {"type": "sda", "hiddens": [25], "suffix": "", "option": {}},
-#                           {"type": "sda", "hiddens": [50], "suffix": "", "option": {}},
+#                           {"type": "dbn", "hiddens": [50,50], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [25], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [50], "suffix": "", "option": {}},
 #                           {"type": "sda", "hiddens": [100], "suffix": "", "option": {}},
                        ],
                   }

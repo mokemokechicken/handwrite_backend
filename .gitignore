@@ -5,7 +5,7 @@
 .settings
 *.swp
 
-nnservice.db
+nn.db
 
 venv
 
