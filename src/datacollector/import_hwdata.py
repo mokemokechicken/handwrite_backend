@@ -86,6 +86,6 @@ class ImportHWData(object):
 
 if __name__ == "__main__":
     ip = ImportHWData()
-    ip.multiply = 30
-    ip.noise_range = [0.5, 2]
+    ip.multiply = 20
+    ip.noise_range = [0.9, 1.1]
     print "Imported %s" % ip.run()

@@ -30,6 +30,7 @@ class NNInfer(object):
         self.nnmachine = build_nnmachine(self.model)
         self.p_y_given_x = theano.function([self.nnmachine.x], self.nnmachine.p_y_given_x)
         self.y_pred = theano.function([self.nnmachine.x], self.nnmachine.y_pred)
+        return self
     
     def infer(self, xs):
         """

@@ -15,11 +15,17 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 from nnservice.nninfer import NNInfer
+from nnservice.repositories import NNMachineRepository
+from nnservice.db import NNDatabase
 
 
 class InferServiceHandler(object):
-    def __init__(self):
-        self.service_obj = NNInfer.best_machine()
+    def __init__(self, nn_id=None):
+        if nn_id is None:
+            self.service_obj = NNInfer.best_machine()
+        else:
+            nn_model = NNMachineRepository(NNDatabase()).get(nn_id)
+            self.service_obj = NNInfer(nn_model).setup_nnmachine()
     
     def infer(self, xs):
         print "infer"
@@ -27,10 +33,13 @@ class InferServiceHandler(object):
             print "error length %d != %d" % (self.service_obj.model.num_in, len(xs))
             return []
         y, ys = self.service_obj.infer(xs)
+        print y
         return ys
 
 if __name__ == "__main__":
-    handler = InferServiceHandler()
+    import sys
+    nn_id = len(sys.argv) > 1 and int(sys.argv[1]) or None
+    handler = InferServiceHandler(nn_id)
     processor = Infer.Processor(handler)
     transport = TSocket.TServerSocket(port=9999)
     tfactory = TTransport.TBufferedTransportFactory()

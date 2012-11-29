@@ -29,8 +29,20 @@ ENDPOINTS = {
 NNMACHINE_TYPES = {
                        "hw_numbers": [
 #                           {"type": "dbn", "hiddens": [50,50], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [25], "suffix": "", "option": {}},
+                           #{"type": "sda", "hiddens": [25], "suffix": "", "option": {}},
+                           #{"type": "sda", "hiddens": [50], "suffix": "", "option": {}},
                            {"type": "sda", "hiddens": [50], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [50,50], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [50,30,20], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [100], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [200], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [400], "suffix": "", "option": {}},
+                           {"type": "dbn", "hiddens": [50], "suffix": "", "option": {}},
+                           {"type": "dbn", "hiddens": [50,50], "suffix": "", "option": {}},
+                           {"type": "dbn", "hiddens": [50,30,20], "suffix": "", "option": {}},
+                           {"type": "dbn", "hiddens": [100], "suffix": "", "option": {}},
+                           {"type": "dbn", "hiddens": [200], "suffix": "", "option": {}},
+                           {"type": "dbn", "hiddens": [400], "suffix": "", "option": {}},
 #                           {"type": "sda", "hiddens": [100], "suffix": "", "option": {}},
                        ],
                   }
@@ -39,9 +51,9 @@ DEFAULT_LARNING_OPTION = {
     "batch_size": 10,
     "pretrain_lr": 0.01,
     "k": 1,
-    "training_epochs": 1000,
+    "training_epochs": 100000,
     "finetune_lr": 0.1,
     "improvement_threshold": 0.995,
     "patience_increase": 2,
-    "patience_first": 700,
+    "patience_first": 1000,
 }
