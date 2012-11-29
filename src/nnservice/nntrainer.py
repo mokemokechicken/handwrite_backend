@@ -5,14 +5,21 @@ Created on 2012/11/28
 @author: k_morishita
 '''
 from nnservice import settings
-from nnservice.repositories import LearnDataRepository
+from nnservice.repositories import LearnDataRepository, NNMachineRepository
 from nnservice.db import NNDatabase
 from prjlib.nn.DBN import DBN
 from prjlib.nn.SdA import SdA
 from cStringIO import StringIO
 
-from prjlib.nn.learning import load_data
+from prjlib.nn.learning import load_data, pretraining_model, fine_tune_model,\
+    evaluate_model
 import numpy
+import copy
+from nnservice.models import NNMachine
+import json
+from prjlib.nn.state_persistent import save_params
+import tempfile
+import logging
 
 class NNTrainer(object):
     def __init__(self, typename, generation=None):
@@ -26,18 +33,25 @@ class NNTrainer(object):
         for config in nnmachine_list:
             nnmachine = self.build_machine(config, ld_model)
             self.learn(nnmachine, config, ld_model, dataset)
-            score = self.calc_score(nnmachine, dataset)
-            self.store_machine(nnmachine, config, ld_model, score)
+            valid_loss, test_loss = self.calc_score(nnmachine, dataset)
+            self.store_machine(nnmachine, config, ld_model, test_loss)
     
     def load_learn_data(self):
         ld_model = LearnDataRepository(self.db).get(self.typename, self.generation)
+        self.generation = ld_model.generation
         ioobj = StringIO(ld_model.data)
         dataset = load_data(ioobj)
         ioobj.close()
         return ld_model, dataset
     
     def get_nnmachine_type_list(self):
-        return settings.NNMACHINE_TYPES[self.typename]
+        ret = []
+        for c in settings.NNMACHINE_TYPES[self.typename]:
+            config = copy.copy(settings.DEFAULT_LARNING_OPTION)
+            config.update(c)
+            ret.append(config)
+        return ret
+    
 
     def build_machine(self, config, ld_model):
         NNClass = self.get_nnclass(config["type"])
@@ -54,14 +68,29 @@ class NNTrainer(object):
             return SdA
     
     def learn(self, nnmachine, config, ld_model, dataset):
-        pass
+        pretraining_model(nnmachine, dataset[0][0], **config)
+        fine_tune_model(nnmachine, dataset, **config)
     
     def calc_score(self, nnmachine, dataset):
-        pass
-    
-    def store_machine(self, nnmachine, config, ld_model, dataset):
-        pass
+        """
+        
+        @return 2-tuple: (validation_loss, test_loss)   (float)
+        """
+        return evaluate_model(nnmachine, dataset)
+
+    def store_machine(self, nnmachine, config, ld_model, score):
+        repo = NNMachineRepository(self.db)
+        model = NNMachine(name=self.typename, generation=self.generation,
+                          num_in=ld_model.num_in, num_out=ld_model.num_out,
+                          nnconfig=json.dumps(config),
+                          score=score)
+        tmpf = tempfile.TemporaryFile()
+        save_params(tmpf, nnmachine)
+        tmpf.seek(0)
+        model.data = tmpf.read()
+        repo.add(model)
 
 if __name__ == "__main__":
-    nnt = NNTrainer("hw_numbsers")
+    logging.basicConfig(level=logging.DEBUG)
+    nnt = NNTrainer("hw_numbers")
     nnt.run()

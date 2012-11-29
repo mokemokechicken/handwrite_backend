@@ -20,10 +20,13 @@ def load_params(filename):
     return data
 
 def save_params(filename, machine):
-    basedir = os.path.abspath(os.path.dirname(filename))
-    if not os.path.isdir(basedir):
-        os.makedirs(basedir)
-    fout = gzip.open(filename, "wb")
+    if isinstance(filename, (str,)):
+        basedir = os.path.abspath(os.path.dirname(filename))
+        if not os.path.isdir(basedir):
+            os.makedirs(basedir)
+        fout = gzip.open(filename, "wb")
+    else:
+        fout = gzip.GzipFile(fileobj=filename, mode="wb")
     dump(machine.serialize(), fout, protocol=HIGHEST_PROTOCOL)
     fout.close()
 

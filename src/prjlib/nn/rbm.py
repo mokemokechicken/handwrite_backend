@@ -18,9 +18,9 @@ import os
 from theano.tensor.shared_randomstreams import RandomStreams
 
 from utils import tile_raster_images
-from logistic_sgd import load_data
 
 from state_persistent import StatePersistent, load_params, save_params
+from prjlib.nn.learning import load_data
 
 
 class RBM(StatePersistent):

@@ -12,11 +12,12 @@ import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
 
-from logistic_sgd import LogisticRegression, load_data
+from logistic_sgd import LogisticRegression
 from mlp import HiddenLayer
 from rbm import RBM
 
 from state_persistent import StatePersistent, load_params, save_params
+from prjlib.nn.learning import load_data
 
 
 F = "__file__" in locals() and __file__ or "./a"

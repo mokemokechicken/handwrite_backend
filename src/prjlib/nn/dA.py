@@ -42,10 +42,10 @@ import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
 
-from logistic_sgd import load_data
 from utils import tile_raster_images
 
 import PIL.Image
+from prjlib.nn.learning import load_data
 
 
 class dA(object):

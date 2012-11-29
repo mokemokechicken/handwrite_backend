@@ -29,8 +29,6 @@
    Systems 19, 2007
 
 """
-import cPickle
-import gzip
 import os
 import sys
 import time
@@ -41,12 +39,13 @@ import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
 
-from logistic_sgd import LogisticRegression, load_data
+from logistic_sgd import LogisticRegression
 from mlp import HiddenLayer
 from dA import dA
 
 from state_persistent import StatePersistent, load_params, save_params
 from learning import evaluate_model
+from prjlib.nn.learning import load_data
 
 
 class SdA(StatePersistent):

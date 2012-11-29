@@ -18,11 +18,10 @@ References:
                  Christopher M. Bishop, section 5
 
 """
+from prjlib.nn.learning import load_data
 __docformat__ = 'restructedtext en'
 
 
-import cPickle
-import gzip
 import os
 import sys
 import time
@@ -33,7 +32,7 @@ import theano
 import theano.tensor as T
 
 
-from logistic_sgd import LogisticRegression, load_data
+from logistic_sgd import LogisticRegression
 from state_persistent import StatePersistent, load_params, save_params
 
 

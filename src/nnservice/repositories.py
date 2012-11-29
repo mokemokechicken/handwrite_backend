@@ -44,3 +44,14 @@ class LearnDataRepository(object):
         return q
 
     
+class NNMachineRepository(object):
+    modelClass = models.NNMachine
+    
+    def __init__(self, database):
+        self.db = database
+    
+    def add(self, model):
+        session = self.db.Session()
+        model.create_datetime = datetime.datetime.now()
+        session.add(model)
+        session.commit()

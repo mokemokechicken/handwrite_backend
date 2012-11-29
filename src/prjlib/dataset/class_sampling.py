@@ -8,6 +8,7 @@ Created on 2012/11/27
 import numpy
 import csv
 from tempfile import TemporaryFile
+from collections import Counter
 
 class ClassSampling(object):
     def __enter__(self):
@@ -35,6 +36,7 @@ class ClassSampling(object):
                 num = numrow * ratio / rsum
                 idx_list[lpt:lpt+num] = idx
                 lpt += num
+
             numpy.random.shuffle(idx_list)
             for line, row in enumerate(csv.reader(fin)):
                 idx = idx_list[line]

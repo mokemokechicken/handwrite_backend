@@ -52,13 +52,25 @@ class ClassSamplingTest(TestCase):
             self.assertEquals(5, len(d3[0]))
             self.check_classnums(d1, N*0.8)
             self.check_classnums(d2, N*0.1)
-            self.check_classnums(d2, N*0.1)
-        if True:
+            self.check_classnums(d3, N*0.1)
+        if False:
             print "\n".join([str(x) for x in d1])
             print "-" * 50
             print "\n".join([str(x) for x in d2])
             print "-" * 50
             print "\n".join([str(x) for x in d3])
+   
+    def nontest_sampling_few(self):
+        N = self.N
+        with ClassSampling() as cs:
+            rates = [57,1,2]
+            trainset, validateset, testset = cs.sampling(self.reader, rates, (3,5))
+            d1 = list(trainset)
+            d2 = list(validateset)
+            d3 = list(testset)
+            self.assertEquals(int(N*rates[0]/sum(rates)), len(d1))
+            self.assertEquals(int(N*rates[1]/sum(rates)), len(d2))
+            self.assertEquals(int(N*rates[2]/sum(rates)), len(d3))
    
     def check_classnums(self, d, n):
         self.assertEquals(int(n/6), len(filter(lambda x: x[3]+x[4]=="a1", d)))

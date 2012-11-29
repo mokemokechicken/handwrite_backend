@@ -33,3 +33,12 @@ NNMACHINE_TYPES = {
                            {"type": "sda", "hiddens": [50],     "suffix": "", "option": {}},
                        ],
                   }
+DEFAULT_LARNING_OPTION = {
+    "pretraining_epochs": 3,
+    "batch_size": 1,
+    "pretrain_lr": 0.01,
+    "k": 1,
+    "training_epochs": 3,
+    "finetune_lr": 0.1,
+    "improvement_threshold": 0.995,
+}
