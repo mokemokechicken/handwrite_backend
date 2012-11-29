@@ -55,3 +55,11 @@ class NNMachineRepository(object):
         model.create_datetime = datetime.datetime.now()
         session.add(model)
         session.commit()
+    
+    def get(self, nn_id):
+        session = self.db.Session()
+        return session.query(self.modelClass).filter_by(id=nn_id).one()
+    
+    def get_best_model(self):
+        session = self.db.Session()
+        return session.query(self.modelClass).order_by(self.modelClass.score).first()

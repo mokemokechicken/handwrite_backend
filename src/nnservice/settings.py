@@ -29,16 +29,27 @@ ENDPOINTS = {
 
 NNMACHINE_TYPES = {
                        "hw_numbers": [
-                           {"type": "dbn", "hiddens": [50, 50], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [50],     "suffix": "", "option": {}},
+                           #{"type": "dbn", "hiddens": [50,50], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [9], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [8], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [7], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [6], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [5], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [4], "suffix": "", "option": {}},
+                           {"type": "sda", "hiddens": [3], "suffix": "", "option": {}},
+#                           {"type": "sda", "hiddens": [25], "suffix": "", "option": {}},
+#                           {"type": "sda", "hiddens": [50], "suffix": "", "option": {}},
+#                           {"type": "sda", "hiddens": [100], "suffix": "", "option": {}},
                        ],
                   }
 DEFAULT_LARNING_OPTION = {
-    "pretraining_epochs": 3,
-    "batch_size": 1,
+    "pretraining_epochs": 300,
+    "batch_size": 10,
     "pretrain_lr": 0.01,
     "k": 1,
-    "training_epochs": 3,
+    "training_epochs": 1000,
     "finetune_lr": 0.1,
     "improvement_threshold": 0.995,
+    "patience_increase": 2,
+    "patience_first": 700,
 }

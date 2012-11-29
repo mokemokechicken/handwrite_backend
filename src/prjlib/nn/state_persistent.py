@@ -13,11 +13,17 @@ import gzip
 
 def load_params(filename):
     data = None
-    if os.path.exists(filename):
+    if isinstance(filename, (str, )) and os.path.exists(filename):
         fin = gzip.open(filename, "rb")
         data = load(fin)
         fin.close()
+    elif not isinstance(filename, (str,)):
+        fin = gzip.GzipFile(fileobj=filename, mode="rb")
+        data = load(fin)
+        fin.close()
     return data
+
+
 
 def save_params(filename, machine):
     if isinstance(filename, (str,)):

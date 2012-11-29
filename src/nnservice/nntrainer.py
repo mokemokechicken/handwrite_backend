@@ -20,6 +20,7 @@ import json
 from prjlib.nn.state_persistent import save_params
 import tempfile
 import logging
+from nnservice.nncommon import get_nnclass
 
 class NNTrainer(object):
     def __init__(self, typename, generation=None):
@@ -54,19 +55,13 @@ class NNTrainer(object):
     
 
     def build_machine(self, config, ld_model):
-        NNClass = self.get_nnclass(config["type"])
+        NNClass = get_nnclass(config["type"])
         nnmachine = NNClass(numpy_rng=numpy.random.RandomState(89677), 
                             n_ins=ld_model.num_in, n_outs=ld_model.num_out,
                             hidden_layers_sizes=config["hiddens"]
                             )
         return nnmachine
 
-    def get_nnclass(self, nntype):
-        if nntype == "dbn":
-            return DBN
-        elif nntype == "sda":
-            return SdA
-    
     def learn(self, nnmachine, config, ld_model, dataset):
         pretraining_model(nnmachine, dataset[0][0], **config)
         fine_tune_model(nnmachine, dataset, **config)

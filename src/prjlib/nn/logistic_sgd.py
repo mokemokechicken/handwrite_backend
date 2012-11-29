@@ -33,6 +33,7 @@ References:
                  Christopher M. Bishop, section 4.3.2
 
 """
+from prjlib.nn.learning import load_data
 
 __docformat__ = 'restructedtext en'
 

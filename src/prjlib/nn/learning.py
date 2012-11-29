@@ -115,11 +115,16 @@ def evaluate_model(dbn, datasets):
     return this_validation_loss, this_test_loss
 
 
-def fine_tune_model(dbn, datasets, training_epochs, batch_size, finetune_lr=0.1, improvement_threshold=0.995, **kw):
+def fine_tune_model(dbn, datasets, training_epochs, batch_size, finetune_lr=0.1, 
+                    improvement_threshold=0.995, 
+                    patience_increase=2,
+                    patience_first=10,
+                    **kw):
     """
     
     param: improvement_threshold
             a relative improvement of this much is considered significant
+    param: patience_increase:  wait this much longer when a new best is found
     """
     ########################
     # FINETUNING THE MODEL #
@@ -134,8 +139,7 @@ def fine_tune_model(dbn, datasets, training_epochs, batch_size, finetune_lr=0.1,
 
     log('... finetunning the model')
     # early-stopping parameters
-    patience = 4 * n_train_batches  # look as this many examples regardless
-    patience_increase = 2.    # wait this much longer when a new best is found
+    patience = patience_first * n_train_batches  # look as this many examples regardless
     validation_frequency = min(n_train_batches, patience / 2)
     # go through this many
     # minibatche before checking the network
@@ -187,6 +191,7 @@ def fine_tune_model(dbn, datasets, training_epochs, batch_size, finetune_lr=0.1,
 
             if patience <= iter_idx:
                 done_looping = True
+                log("Over patience!!")
                 break
 
     end_time = time.clock()

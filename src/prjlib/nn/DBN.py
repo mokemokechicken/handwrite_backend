@@ -150,6 +150,10 @@ class DBN(StatePersistent):
         # symbolic variable that points to the number of errors made on the
         # minibatch given by self.x and self.y
         self.errors = self.logLayer.errors(self.y)
+        
+        self.p_y_given_x = self.logLayer.p_y_given_x
+        self.y_pred = self.logLayer.y_pred
+
 
     def pretraining_functions(self, train_set_x, batch_size, k, **kw):
         '''Generates a list of functions, for performing one step of
