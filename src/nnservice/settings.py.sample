@@ -23,23 +23,39 @@ DATABASE_FILE_DIR = THIS_DIR
 DATA_SERVER = "localhost:8000"
 
 ENDPOINTS = {
-             "hw_numbers": "http://%s/data/api/hw_numbers" % DATA_SERVER,
-             }
+    "numbers": "http://%s/data/api" % DATA_SERVER,
+    "num_hira": "http://%s/data/api" % DATA_SERVER,
+}
+
+SERVICE_ENDPOINTS = {
+    "numbers": ("localhost", 9999),
+    "num_hira": ("localhost", 9998),
+}
 
 NNMACHINE_TYPES = {
-                       "hw_numbers": [
-                           {"type": "sda", "hiddens": [50], "suffix": "", "option": {}},
-                           {"type": "sda", "hiddens": [100], "suffix": "", "option": {}},
+    "numbers": [
+       {"type": "sda", "hiddens": [50], "pretraining_epochs": 300, "training_epochs": 100000, "suffix": "", "option": {}},
+       {"type": "sda", "hiddens": [100], "pretraining_epochs": 300, "training_epochs": 100000, "suffix": "", "option": {}},
 #                           {"type": "dbn", "hiddens": [50], "suffix": "", "option": {}},
 #                           {"type": "dbn", "hiddens": [100], "suffix": "", "option": {}},
-                       ],
-                  }
+    ],
+    "num_hira": [
+       {"type": "sda", "hiddens": [50],  "pretraining_epochs": 300, "training_epochs": 100000, "suffix": "", "option": {}},
+       {"type": "sda", "hiddens": [100], "pretraining_epochs": 300, "training_epochs": 100000, "suffix": "", "option": {}},
+       {"type": "sda", "hiddens": [200], "pretraining_epochs": 300, "training_epochs": 100000, "suffix": "", "option": {}},
+     ]
+}
+
 DEFAULT_LARNING_OPTION = {
+    "data_multiply": 20,
+    "data_noise_range": [0.9, 1.1],
     "pretraining_epochs": 300,
+    "training_epochs": 100000,
+    "pretraining_epochs": 3,
+    "training_epochs": 10,
     "batch_size": 10,
     "pretrain_lr": 0.01,
     "k": 1,
-    "training_epochs": 100000,
     "finetune_lr": 0.1,
     "improvement_threshold": 0.995,
     "patience_increase": 2,
