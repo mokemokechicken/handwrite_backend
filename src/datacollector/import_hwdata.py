@@ -12,8 +12,7 @@ from tempfile import NamedTemporaryFile
 
 import extapi
 from prjlib.dataset.class_sampling import ClassSampling
-import numpy
-from cPickle import load, dump, HIGHEST_PROTOCOL
+from cPickle import dump, HIGHEST_PROTOCOL
 from nnservice.models import LearnData
 from nnservice.repositories import LearnDataRepository
 from nnservice.db import NNDatabase
@@ -28,9 +27,9 @@ class ImportHWData(object):
     multiply = None       # データの水増し廖
     noise_range = None    # わざとブレさせる倍率幅。 [0.5,2] などのように範囲で指定。
     
-    def run(self):
+    def run(self, typename):
         try:
-            self.api = extapi.HWDataAPI()
+            self.api = extapi.HWDataAPI(typename)
             body, info = self.api.get_data(multiply=self.multiply, noise_range=self.noise_range)
             reader = csv.reader(body)
             range_x = (1, info["num_in"]+1)
@@ -85,7 +84,9 @@ class ImportHWData(object):
         repo.add(model)
 
 if __name__ == "__main__":
+    import sys
+    typename = len(sys.argv) > 1 and sys.argv[1] or "numbers"
     ip = ImportHWData()
     ip.multiply = 20
     ip.noise_range = [0.9, 1.1]
-    print "Imported %s" % ip.run()
+    print "Imported[%s] %s" % (typename, ip.run(typename))

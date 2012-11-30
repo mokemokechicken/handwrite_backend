@@ -14,7 +14,8 @@ import urllib
 
 class ExtAPIBase(object):
     typename = None
-    def __init__(self, endpoint = None, timeout=7200):
+    def __init__(self, typename=None, endpoint = None, timeout=7200):
+        self.typename = typename or self.typename
         self.endpoint = endpoint or settings.ENDPOINTS[self.typename]
         self.timeout = timeout
     
@@ -38,8 +39,6 @@ class ExtAPIBase(object):
         return fileobj, headers
 
 class HWDataAPI(ExtAPIBase):
-    typename = "hw_numbers"
-
     def get_data(self, multiply=None, noise_range=None):
         """
         

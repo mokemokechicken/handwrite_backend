@@ -13,7 +13,7 @@ from ..extapi import HWDataAPI
 
 class HWDataAPITest(TestCase):
     def setUp(self):
-        self.api = HWDataAPI()
+        self.api = HWDataAPI("numbers")
     
     def test_get_data_with_params(self):
         r = {

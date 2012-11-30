@@ -87,5 +87,5 @@ class NNTrainer(object):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    nnt = NNTrainer("hw_numbers")
+    nnt = NNTrainer("numbers")
     nnt.run()
