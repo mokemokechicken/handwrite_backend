@@ -8,10 +8,10 @@ Created on 2012/11/29
 from unittest.case import TestCase
 from mock import patch
 
-
 from ..extapi import HWDataAPI
 from _pyio import StringIO
 import json
+
 
 class HWDataAPITest(TestCase):
     def setUp(self):
@@ -41,16 +41,18 @@ class HWDataAPITest(TestCase):
             api.assert_called_with("dataset", params={"multiply":3, "noise_range":"0.5,2"})
 
     def test_get_info_with_params(self):
-        filelike = StringIO(json.dumps({"hoge": 1}))
+        js = {"row": 1, "in": 2, "out": 3}
+        jsret = {"num_row": 1, "num_in": 2, "num_out": 3}
+        filelike = StringIO(json.dumps(js))
         with patch.object(self.api, "_fetch_data", return_value=[filelike, None]) as api:
             f = self.api.get_info()
             api.assert_called_with("datainfo", params={})
-            self.assertEquals({"hoge":1}, f)
+            self.assertEquals(jsret, f)
         
         filelike.seek(0)
         with patch.object(self.api, "_fetch_data", return_value=[filelike, None]) as api:
             f = self.api.get_info(multiply=3)
             api.assert_called_with("datainfo", params={"multiply": 3})
-            self.assertEquals({"hoge":1}, f)
+            self.assertEquals(jsret, f)
         
         

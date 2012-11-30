@@ -16,8 +16,8 @@ import numpy
 class NNInfer(object):
     
     @classmethod
-    def best_machine(cls):
-        nn_model = NNMachineRepository(NNDatabase()).get_best_model()
+    def best_machine(cls, typename=None):
+        nn_model = NNMachineRepository(NNDatabase()).get_best_model(typename)
         infer = NNInfer(nn_model)
         infer.setup_nnmachine()
         return infer
@@ -31,6 +31,10 @@ class NNInfer(object):
         self.p_y_given_x = theano.function([self.nnmachine.x], self.nnmachine.p_y_given_x)
         self.y_pred = theano.function([self.nnmachine.x], self.nnmachine.y_pred)
         return self
+    
+    def _typename(self):
+        return self.model.name
+    typename = property(_typename)
     
     def infer(self, xs):
         """

@@ -10,6 +10,7 @@ from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
+import time
 
 # Make socket
 transport = TSocket.TSocket('localhost', 9999)
@@ -25,7 +26,6 @@ client = Infer.Client(protocol)
 
 # Connect!
 transport.open()
-
 
 DD = [0, 0, 0, 0, 0, 0, 0, 0.06599663291074444, 0, 0, 0, 0, 0, 0, 0, 0, 0.19405039437103846, 
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.12292725943057184, 0, 0, 0, 0, 0, 0, 
@@ -45,5 +45,7 @@ DD = [0, 0, 0, 0, 0, 0, 0, 0.06599663291074444, 0, 0, 0, 0, 0, 0, 0, 0, 0.194050
  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-print client.infer(DD)
+#print client.infer(DD)
+#print client.update_nnmachine(56)
+print client.halt()
 

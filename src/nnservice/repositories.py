@@ -60,6 +60,10 @@ class NNMachineRepository(object):
         session = self.db.Session()
         return session.query(self.modelClass).filter_by(id=nn_id).one()
     
-    def get_best_model(self):
+    def get_best_model(self, typename=None):
         session = self.db.Session()
-        return session.query(self.modelClass).order_by(self.modelClass.score).first()
+        q = session.query(self.modelClass).order_by(self.modelClass.generation.desc(), self.modelClass.score)
+        if typename is not None:
+            q = q.filter_by(name=typename)
+        return q.first()
+
