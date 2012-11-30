@@ -17,6 +17,7 @@ from thrift.server import TServer
 from nnservice.nninfer import NNInfer
 from nnservice.repositories import NNMachineRepository
 from nnservice.db import NNDatabase
+import time
 
 
 class InferServiceHandler(object):
@@ -28,12 +29,12 @@ class InferServiceHandler(object):
             self.service_obj = NNInfer(nn_model).setup_nnmachine()
     
     def infer(self, xs):
-        print "infer"
         if self.service_obj.model.num_in != len(xs):
             print "error length %d != %d" % (self.service_obj.model.num_in, len(xs))
             return []
+        start_time = time.time()
         y, ys = self.service_obj.infer(xs)
-        print y
+        print "infer %s (%f msec)" % (y, (time.time() - start_time)*1000) 
         return ys
 
 if __name__ == "__main__":

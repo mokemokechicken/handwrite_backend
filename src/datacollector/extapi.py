@@ -11,6 +11,7 @@ import logging
 from nnservice import settings
 import tempfile
 import urllib
+import json
 
 class ExtAPIBase(object):
     typename = None
@@ -19,7 +20,7 @@ class ExtAPIBase(object):
         self.endpoint = endpoint or settings.ENDPOINTS[self.typename]
         self.timeout = timeout
     
-    def _fetch_data(self, params=None):
+    def _fetch_data(self, apitype, params=None):
         """
         
         @return 2-tuple.
@@ -28,7 +29,8 @@ class ExtAPIBase(object):
         """
         if params is not None and len(params) > 0:
             self.endpoint += "?" + urllib.urlencode(params.items())
-        request = urllib2.Request(self.endpoint, headers={"Accept-Encoding": "gzip"})
+        endpoint = "%s/%s/%s" % (self.endpoint, apitype, self.typename)
+        request = urllib2.Request(endpoint, headers={"Accept-Encoding": "gzip"})
         res = urllib2.urlopen(request, timeout=self.timeout)
         fileobj = tempfile.TemporaryFile()
         fileobj.write(res.read())
@@ -51,9 +53,16 @@ class HWDataAPI(ExtAPIBase):
             params["multiply"] = multiply
         if noise_range:
             params["noise_range"] = ",".join([str(x) for x in noise_range])
-        body_filelike, headers = self._fetch_data(params=params)
+        body_filelike, headers = self._fetch_data("dataset", params=params)
         return body_filelike, {
                       "num_in":  int(headers['x-learndata-innodeqty']),
                       "num_out": int(headers['x-learndata-outnodeqty']),
                       "num_row": int(headers['x-learndata-rowqty'])
                       }
+    
+    def get_info(self, multiply=None, **kw):
+        params = {}
+        if multiply:
+            params["multiply"] = multiply
+        body_filelike, _ = self._fetch_data("datainfo", params=params)
+        return json.load(body_filelike)

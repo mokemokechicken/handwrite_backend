@@ -86,6 +86,8 @@ class NNTrainer(object):
         repo.add(model)
 
 if __name__ == "__main__":
+    import sys
+    typename = len(sys.argv) > 1 and sys.argv[1] or "numbers"
     logging.basicConfig(level=logging.DEBUG)
-    nnt = NNTrainer("numbers")
+    nnt = NNTrainer(typename)
     nnt.run()
