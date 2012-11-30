@@ -27,9 +27,9 @@ class ExtAPIBase(object):
             1: File-Like Object of HTTP Body.
             2: urllib2 Header Object.
         """
-        if params is not None and len(params) > 0:
-            self.endpoint += "?" + urllib.urlencode(params.items())
         endpoint = "%s/%s/%s" % (self.endpoint, apitype, self.typename)
+        if params is not None and len(params) > 0:
+            endpoint += "?" + urllib.urlencode(params.items())
         request = urllib2.Request(endpoint, headers={"Accept-Encoding": "gzip"})
         res = urllib2.urlopen(request, timeout=self.timeout)
         fileobj = tempfile.TemporaryFile()
@@ -65,4 +65,9 @@ class HWDataAPI(ExtAPIBase):
         if multiply:
             params["multiply"] = multiply
         body_filelike, _ = self._fetch_data("datainfo", params=params)
-        return json.load(body_filelike)
+        js = json.load(body_filelike)
+        return {
+                "num_in": int(js["in"]),
+                "num_out": int(js["out"]),
+                "num_row": int(js["row"]),
+                }

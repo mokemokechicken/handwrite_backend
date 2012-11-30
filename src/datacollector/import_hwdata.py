@@ -25,34 +25,34 @@ class ImportHWData(object):
     Pickle -> Gzip -> DB
     """
     multiply = None       # データの水増し廖
-    noise_range = None    # わざとブレさせる倍率幅。 [0.5,2] などのように範囲で指定。
+    noise_range = None    # わざとブレさせる倍率幅。 [0.9,1.1] などのように範囲で指定。
     
-    def run(self, typename):
-        try:
-            self.api = extapi.HWDataAPI(typename)
-            body, info = self.api.get_data(multiply=self.multiply, noise_range=self.noise_range)
-            reader = csv.reader(body)
-            range_x = (1, info["num_in"]+1)
-            index_y = info["num_in"]+1
-            with ClassSampling() as cs:
-                trainset, validateset, testset = cs.sampling(reader, [8,1,1], (index_y, index_y+1))
-                out_array = []
-                self.serialize(out_array, trainset, range_x, index_y)
-                self.serialize(out_array, validateset, range_x, index_y)
-                self.serialize(out_array, testset, range_x, index_y)
-                #
-                tmpfile = NamedTemporaryFile()
-                iostream = gzip.GzipFile(fileobj=tmpfile, mode="ab")
-                dump(out_array, iostream, protocol=HIGHEST_PROTOCOL)
-                iostream.close()
-                #
-                tmpfile.seek(0)
-                self.store_dataset(tmpfile, info)
-            return info
-        
-        except IOError, e:
-            print repr(e)
+    def __init__(self, typename, dbconf={}):
+        self.typename = typename
+        self.db = NNDatabase(**dbconf)
     
+    def run_import(self):
+        self.api = extapi.HWDataAPI(self.typename)
+        body, info = self.api.get_data(multiply=self.multiply, noise_range=self.noise_range)
+        reader = csv.reader(body)
+        range_x = (1, info["num_in"]+1)
+        index_y = info["num_in"]+1
+        with ClassSampling() as cs:
+            trainset, validateset, testset = cs.sampling(reader, [8,1,1], (index_y, index_y+1))
+            out_array = []
+            self.serialize(out_array, trainset, range_x, index_y)
+            self.serialize(out_array, validateset, range_x, index_y)
+            self.serialize(out_array, testset, range_x, index_y)
+            #
+            tmpfile = NamedTemporaryFile()
+            iostream = gzip.GzipFile(fileobj=tmpfile, mode="ab")
+            dump(out_array, iostream, protocol=HIGHEST_PROTOCOL)
+            iostream.close()
+            #
+            tmpfile.seek(0)
+            self.store_dataset(tmpfile, info)
+        return info
+
     def serialize(self, out_array, dataset, range_x, index_y):
         """
         
@@ -73,7 +73,7 @@ class ImportHWData(object):
 
     def store_dataset(self, fileobj, info):
         """store into database"""
-        repo = LearnDataRepository(NNDatabase())
+        repo = LearnDataRepository(self.db)
         model = LearnData()
         model.name = self.api.typename
         model.generation = repo.count_number_of_name(model.name) + 1
@@ -83,10 +83,29 @@ class ImportHWData(object):
         model.data = fileobj.read()
         repo.add(model)
 
+    def is_updated(self):
+        self.api = extapi.HWDataAPI(self.typename)
+        info = self.api.get_info(self.multiply)
+        ld_model = LearnDataRepository(self.db).get(self.typename)
+        return ld_model is None or info["num_row"] > ld_model.num_row
+
+    def run_if_updated(self):
+        try:
+            if self.is_updated():
+                return True, self.run_import()
+            else:
+                return False, "Data is not seemed updatd"
+        except IOError, e:
+            print repr(e)
+        return False, None
+
 if __name__ == "__main__":
     import sys
     typename = len(sys.argv) > 1 and sys.argv[1] or "numbers"
-    ip = ImportHWData()
+    ip = ImportHWData(typename)
     ip.multiply = 20
     ip.noise_range = [0.9, 1.1]
-    print "Imported[%s] %s" % (typename, ip.run(typename))
+    updated, retinfo = ip.run_if_updated()
+    print "Imported[%s] %s" % (typename, retinfo)
+    if not updated:
+        sys.exit(1)
