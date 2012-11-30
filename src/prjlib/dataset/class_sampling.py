@@ -8,7 +8,6 @@ Created on 2012/11/27
 import numpy
 import csv
 from tempfile import TemporaryFile
-from collections import Counter
 
 class ClassSampling(object):
     def __enter__(self):
