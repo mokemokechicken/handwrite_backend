@@ -21,6 +21,8 @@ ENV = {"PYTHONPATH": THIS_DIR+"/.."}
 
 def run(typename_list):
     for typename in typename_list:
+        start_machine_if_not_started(typename)
+    for typename in typename_list:
         logging.info("run: [%s]" % typename)
         update_machine(typename)
 
@@ -33,14 +35,28 @@ def update_machine(typename):
         logging.info("Data is Updated: run training")
         nnt = NNTrainer(typename)
         nnt.run()
-        try:
-            client = make_thrift_infer_client(typename)
-            client.halt()
-        except TTransportException, e:
-            logging.warn(repr(e))
-        p = subprocess.Popen(["python", "%s/nnserver.py" % THIS_DIR, typename], env=os.environ)
+        restart_machine(typename)
     else:
         logging.info("No Data Updated, skip")
+
+def restart_machine(typename):
+    try:
+        client = make_thrift_infer_client(typename)
+        client.halt()
+    except TTransportException, e:
+        logging.warn(repr(e))
+    start_machine(typename)
+
+def start_machine(typename):
+    p = subprocess.Popen(["python", "%s/nnserver.py" % THIS_DIR, typename], env=os.environ)
+
+def start_machine_if_not_started(typename):
+    try:
+        client = make_thrift_infer_client(typename)
+        client.infer([0])
+    except TTransportException, e:
+        start_machine(typename)
+    
 
 
 if __name__ == "__main__":
