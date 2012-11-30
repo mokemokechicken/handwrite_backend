@@ -36,8 +36,8 @@ def update_machine(typename):
         try:
             client = make_thrift_infer_client(typename)
             client.halt()
-        except TTransportException:
-            pass
+        except TTransportException, e:
+            logging.warn(repr(e))
         p = subprocess.Popen(["python", "%s/nnserver.py" % THIS_DIR, typename], env=os.environ)
     else:
         logging.info("No Data Updated, skip")
