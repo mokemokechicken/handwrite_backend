@@ -1,27 +1,24 @@
 # coding: utf8
 '''
-Created on 2012/11/30
+Created on 2012/12/03
 
 @author: k_morishita
 '''
 
-import os
 import sys
-import time
+import logging
+
+from cPickle import dumps
+
 from datacollector.import_hwdata import ImportHWData
 from nnservice.settings import DEFAULT_LARNING_OPTION
 from nnservice.nntrainer import NNTrainer
-import logging
-from nnservice.nnserver import make_thrift_infer_client
-import subprocess
+from nnservice.nnbackend import make_thrift_backend_client
+from nnservice.repositories import NNMachineRepository
+from nnservice.db import NNDatabase
 from thrift.transport.TTransport import TTransportException
 
-THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-ENV = {"PYTHONPATH": THIS_DIR+"/.."}
-
 def run(typename_list):
-    for typename in typename_list:
-        start_machine_if_not_started(typename)
     for typename in typename_list:
         logging.info("run: [%s]" % typename)
         update_machine(typename)
@@ -34,31 +31,23 @@ def update_machine(typename):
     if updated:
         logging.info("Data is Updated: run training")
         nnt = NNTrainer(typename)
-        nnt.run()
-        restart_machine(typename)
+        nnt.run(callback=send_to_remote_backend)
     else:
         logging.info("No Data Updated, skip")
 
-def restart_machine(typename):
+def send_to_remote_backend(nn_model=None, nn_id=None):
     try:
-        client = make_thrift_infer_client(typename)
-        client.halt()
+        if nn_model is None and nn_id is None:
+            return
+        if nn_model is None:
+            nn_model = NNMachineRepository(NNDatabase()).get_by_id(nn_id)
+        client = make_thrift_backend_client()
+        client.store_nnmachine(nn_model.name, nn_model.num_in, nn_model.num_out,
+                               nn_model.nnconfig, nn_model.score, nn_model.data)
     except TTransportException, e:
-        logging.warn(repr(e))
-    start_machine(typename)
-
-def start_machine(typename):
-    p = subprocess.Popen(["python", "%s/nnserver.py" % THIS_DIR, typename], env=os.environ)
-
-def start_machine_if_not_started(typename):
-    try:
-        client = make_thrift_infer_client(typename)
-        client.infer([0])
-    except TTransportException, e:
-        start_machine(typename)
-    
-
+        logging.error(repr(e))
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
-    run(sys.argv[1:] or ["numbers"])
+    args = sys.argv[1:]
+    run(args or ["numbers"])

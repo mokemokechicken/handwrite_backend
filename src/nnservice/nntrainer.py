@@ -28,14 +28,17 @@ class NNTrainer(object):
         self.generation = generation
         self.db = NNDatabase()
         
-    def run(self):
+    def run(self, callback=None):
         ld_model, dataset = self.load_learn_data()
         nnmachine_list = self.get_nnmachine_type_list()
         for config in nnmachine_list:
             nnmachine = self.build_machine(config, ld_model)
             self.learn(nnmachine, config, ld_model, dataset)
             valid_loss, test_loss = self.calc_score(nnmachine, dataset)
-            self.store_machine(nnmachine, config, ld_model, test_loss)
+            nn_model = self.store_machine(nnmachine, config, ld_model, test_loss)
+            if callback is not None:
+                callback(nn_model)
+            
     
     def load_learn_data(self):
         ld_model = LearnDataRepository(self.db).get(self.typename, self.generation)
@@ -84,10 +87,11 @@ class NNTrainer(object):
         tmpf.seek(0)
         model.data = tmpf.read()
         repo.add(model)
+        return model
 
 if __name__ == "__main__":
     import sys
     typename = len(sys.argv) > 1 and sys.argv[1] or "numbers"
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
     nnt = NNTrainer(typename)
     nnt.run()

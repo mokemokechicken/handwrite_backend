@@ -40,7 +40,6 @@ class LearnDataRepository(object):
             q = session.query(self.modelClass).filter_by(name=typename).order_by(self.modelClass.generation.desc()).first()
         else:
             q = session.query(self.modelClass).filter_by(name=typename, generation=generation).one()
-
         return q
 
     

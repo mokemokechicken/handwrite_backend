@@ -10,16 +10,12 @@ from __future__ import absolute_import
 from nnservice.interface import Infer
 #from nnservice.interface.ttypes import *
 
-from thrift.transport import TSocket
-from thrift.transport import TTransport
-from thrift.protocol import TBinaryProtocol
-from thrift.server import TServer
 from nnservice.nninfer import NNInfer
 from nnservice.repositories import NNMachineRepository
 from nnservice.db import NNDatabase
 import time
 
-from nnservice import settings
+from nnservice import settings, thrift_util
 
 class InferServiceHandler(object):
     def __init__(self, typename=None, nn_id=None):
@@ -67,29 +63,12 @@ def get_endpoint(typename):
 
 def make_thrift_infer_client(typename):
     host, port = get_endpoint(typename)
-    # Make socket
-    transport = TSocket.TSocket(host, port)
-    transport = TTransport.TBufferedTransport(transport)
-    protocol = TBinaryProtocol.TBinaryProtocol(transport)
-    client = Infer.Client(protocol)
-    # Connect!
-    transport.open()
-    return client
+    return thrift_util.make_thrift_infer_client(Infer, host, port)
 
 def run_server(typename=None, nn_id=None):
     handler = InferServiceHandler(typename=typename, nn_id=nn_id)
-    processor = Infer.Processor(handler)
     _, port = get_endpoint(handler.typename)
-    transport = TSocket.TServerSocket(port=port)
-    tfactory = TTransport.TBufferedTransportFactory()
-    pfactory = TBinaryProtocol.TBinaryProtocolFactory()
-     
-    server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
-    handler.server = server
-     
-    print "Starting infer server[%s:%d] port=%d ..." % (handler.typename, handler.nn_id, port)
-    server.serve()
-    print "done!"
+    thrift_util.run_server(Infer, handler, port=port)
 
 if __name__ == "__main__":
     import sys

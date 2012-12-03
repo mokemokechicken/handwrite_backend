@@ -32,6 +32,9 @@ SERVICE_ENDPOINTS = {
     "num_hira": ("localhost", 9998),
 }
 
+BACKEND_HOST = "localhost"
+BACKEND_PORT = 9009
+
 NNMACHINE_TYPES = {
     "numbers": [
        {"type": "sda", "hiddens": [50], "pretraining_epochs": 300, "training_epochs": 100000, "suffix": "", "option": {}},
@@ -47,12 +50,11 @@ NNMACHINE_TYPES = {
 }
 
 DEFAULT_LARNING_OPTION = {
-    "data_multiply": 20,
+    "data_multiply": 5,
     "data_noise_range": [0.9, 1.1],
     "pretraining_epochs": 300,
     "training_epochs": 100000,
     "pretraining_epochs": 3,
-    "training_epochs": 10,
     "batch_size": 10,
     "pretrain_lr": 0.01,
     "k": 1,

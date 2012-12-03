@@ -1,1 +1,1 @@
-__all__ = ['ttypes', 'constants', 'Infer']
+__all__ = ['ttypes', 'constants', 'Infer', 'NNBackend']
