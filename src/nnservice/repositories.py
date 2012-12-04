@@ -65,4 +65,27 @@ class NNMachineRepository(object):
         if typename is not None:
             q = q.filter_by(name=typename)
         return q.first()
+    
+    def get_models_after(self, typename, nn_id):
+        session = self.db.Session()
+        q = session.query(self.modelClass).filter(self.modelClass.id > nn_id).order_by(self.modelClass.id)
+        q = q.filter_by(name=typename) 
+        return q
+
+class NNEvaluateRepository(object):
+    modelClass = models.NNEvaluate
+
+    def __init__(self, database):
+        self.db = database
+    
+    def add(self, model):
+        session = self.db.Session()
+        model.create_datetime = datetime.datetime.now()
+        session.add(model)
+        session.commit()
+    
+    def get_latest_evaluation(self, typename):
+        session = self.db.Session()
+        q = session.query(self.modelClass).filter_by(name=typename).order_by(self.modelClass.id.desc())
+        return q.first()
 

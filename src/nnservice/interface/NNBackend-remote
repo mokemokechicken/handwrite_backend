@@ -24,6 +24,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print ''
   print 'Functions:'
   print '  bool store_nnmachine(string name, i32 num_in, i32 num_out, string nnconfig, double score, string data)'
+  print '  bool infer_server_ctl(string cmd, string name, i64 nn_id)'
   print ''
   sys.exit(0)
 
@@ -80,6 +81,12 @@ if cmd == 'store_nnmachine':
     print 'store_nnmachine requires 6 args'
     sys.exit(1)
   pp.pprint(client.store_nnmachine(args[0],eval(args[1]),eval(args[2]),args[3],eval(args[4]),args[5],))
+
+elif cmd == 'infer_server_ctl':
+  if len(args) != 3:
+    print 'infer_server_ctl requires 3 args'
+    sys.exit(1)
+  pp.pprint(client.infer_server_ctl(args[0],args[1],eval(args[2]),))
 
 else:
   print 'Unrecognized method %s' % cmd

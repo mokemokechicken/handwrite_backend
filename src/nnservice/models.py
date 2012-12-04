@@ -50,6 +50,7 @@ class NNEvaluate(Base):
     
     id = Column(t.Integer, Sequence('nneval_id_seq'), primary_key=True)
     name = Column(t.String(256))
+    learn_data_id = Column(t.Integer, ForeignKey("learn_data.id"))
     create_datetime = Column(t.DateTime)
     
     def __repr__(self):

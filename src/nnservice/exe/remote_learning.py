@@ -8,13 +8,14 @@ Created on 2012/12/03
 import sys
 import logging
 
+from thrift.transport.TTransport import TTransportException
+
 from datacollector.import_hwdata import ImportHWData
 from nnservice.settings import DEFAULT_LARNING_OPTION
 from nnservice.nntrainer import NNTrainer
 from nnservice.thrift_util import make_thrift_backend_client
 from nnservice.repositories import NNMachineRepository
 from nnservice.db import NNDatabase
-from thrift.transport.TTransport import TTransportException
 
 def run(typename_list):
     for typename in typename_list:

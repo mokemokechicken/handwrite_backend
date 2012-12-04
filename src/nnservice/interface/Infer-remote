@@ -26,6 +26,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print '   infer( input)'
   print '  bool update_nnmachine(i64 nn_id)'
   print '  void halt()'
+  print '  bool ping()'
   print ''
   sys.exit(0)
 
@@ -94,6 +95,12 @@ elif cmd == 'halt':
     print 'halt requires 0 args'
     sys.exit(1)
   pp.pprint(client.halt())
+
+elif cmd == 'ping':
+  if len(args) != 0:
+    print 'ping requires 0 args'
+    sys.exit(1)
+  pp.pprint(client.ping())
 
 else:
   print 'Unrecognized method %s' % cmd

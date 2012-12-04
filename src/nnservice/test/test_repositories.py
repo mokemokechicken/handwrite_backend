@@ -9,9 +9,11 @@ from unittest.case import TestCase
 
 from ..db import NNDatabase
 from ..repositories import LearnDataRepository
-from ..models import LearnData
+from ..models import LearnData, NNMachine, NNEvaluate, NNEvaluateResult
 from sqlalchemy.sql.expression import select
 import datetime
+from nnservice.repositories import NNMachineRepository, NNEvaluateRepository
+
 
 class LearnDataRepositoryTest(TestCase):
     def setUp(self):
@@ -65,5 +67,51 @@ class LearnDataRepositoryTest(TestCase):
         self.assertEquals(2, self.obj.get("hoge").generation)
         self.assertEquals(1, self.obj.get("moke").generation)
         
+class NNMachineRepositoryTest(TestCase):
+    def setUp(self):
+        self.db = NNDatabase(connection="sqlite://")
+        for m in [NNMachine, NNEvaluate, NNEvaluateResult]:
+            self.db.create_table(m)
 
+    def tearDown(self):
+        self.db.close()
+    
+    def test_models_after(self):
+        repo = NNMachineRepository(self.db)
+        name = "hoge"
+        for _ in range(5):
+            repo.add(NNMachine(name=name))
+        for _ in range(5):
+            repo.add(NNMachine(name="MMMMMM"))
+        ret = list(repo.get_models_after(name, "3"))
+        self.assertEquals(2, len(ret))
+        self.assertEquals(4, ret[0].id)
+        self.assertEquals(5, ret[1].id)
+    
+class NNEvaluateRepositoryTest(TestCase):
+    def setUp(self):
+        self.db = NNDatabase(connection="sqlite://")
+        for m in [LearnData, NNMachine, NNEvaluate, NNEvaluateResult]:
+            self.db.create_table(m)
+
+    def tearDown(self):
+        self.db.close()
+    
+    def test_get_latest_evaluation(self):
+        l_repo = LearnDataRepository(self.db)
+        #m_repo = NNMachineRepository(self.db)
+        e_repo = NNEvaluateRepository(self.db)
+        name = "hoge"
+        for _ in range(3):
+            l_model = LearnData(name=name)
+            l_repo.add(l_model)
+            e_repo.add(NNEvaluate(name=name, learn_data_id=l_model.id))
+        e_model = e_repo.get_latest_evaluation(name)
+        self.assertEquals(3, e_model.id)
+        self.assertEquals(3, e_model.learn_data_id)
+        
+    def test_get_latest_evaluation_empty(self):
+        e_repo = NNEvaluateRepository(self.db)
+        e_model = e_repo.get_latest_evaluation("hoge")
+        self.assertEquals(None, e_model)
     

@@ -5,18 +5,14 @@ Created on 2012/11/30
 @author: k_morishita
 '''
 
-import os
 import sys
 from datacollector.import_hwdata import ImportHWData
 from nnservice.settings import DEFAULT_LARNING_OPTION
 from nnservice.nntrainer import NNTrainer
 import logging
-from nnservice.thrift_util import make_thrift_infer_client
-import subprocess
-from thrift.transport.TTransport import TTransportException
+from nnservice.exe.exe_common import start_machine_if_not_started,\
+    restart_machine
 
-THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-ENV = {"PYTHONPATH": THIS_DIR+"/.."}
 
 def run(typename_list):
     for typename in typename_list:
@@ -37,25 +33,6 @@ def update_machine(typename):
         restart_machine(typename)
     else:
         logging.info("No Data Updated, skip")
-
-def restart_machine(typename):
-    try:
-        client = make_thrift_infer_client(typename)
-        client.halt()
-    except TTransportException, e:
-        logging.warn(repr(e))
-    start_machine(typename)
-
-def start_machine(typename):
-    p = subprocess.Popen(["python", "%s/nnserver.py" % THIS_DIR, typename], env=os.environ)
-
-def start_machine_if_not_started(typename):
-    try:
-        client = make_thrift_infer_client(typename)
-        client.infer([0])
-    except TTransportException, e:
-        start_machine(typename)
-    
 
 
 if __name__ == "__main__":
