@@ -7,12 +7,11 @@ Created on 2012/11/30
 
 import os
 import sys
-import time
 from datacollector.import_hwdata import ImportHWData
 from nnservice.settings import DEFAULT_LARNING_OPTION
 from nnservice.nntrainer import NNTrainer
 import logging
-from nnservice.nnserver import make_thrift_infer_client
+from nnservice.thrift_util import make_thrift_infer_client
 import subprocess
 from thrift.transport.TTransport import TTransportException
 

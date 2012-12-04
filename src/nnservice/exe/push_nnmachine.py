@@ -11,7 +11,7 @@ import logging
 
 from thrift.transport.TTransport import TTransportException
 
-from nnservice.nnbackend import make_thrift_backend_client
+from nnservice.thrift_util import make_thrift_backend_client
 from nnservice.repositories import NNMachineRepository
 from nnservice.db import NNDatabase
 

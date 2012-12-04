@@ -9,8 +9,10 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
+from nnservice import settings
+from nnservice.interface import NNBackend, Infer
 
-def make_thrift_infer_client(klass, host,  port):
+def make_thrift_client(klass, host,  port):
     # Make socket
     transport = TSocket.TSocket(host, port)
     transport = TTransport.TBufferedTransport(transport)
@@ -33,4 +35,13 @@ def run_server(klass, handler, host=None, port=None):
     server.serve()
     print "done!"
 
+def get_infer_endpoint(typename):
+    return settings.SERVICE_ENDPOINTS.get(typename, ("127.0.0.1", 10000))
 
+def make_thrift_infer_client(typename):
+    host, port = get_infer_endpoint(typename)
+    return make_thrift_client(Infer, host, port)
+
+def make_thrift_backend_client():
+    host, port = settings.BACKEND_HOST, settings.BACKEND_PORT
+    return make_thrift_client(NNBackend, host, port)

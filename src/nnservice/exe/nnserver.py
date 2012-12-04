@@ -15,7 +15,8 @@ from nnservice.repositories import NNMachineRepository
 from nnservice.db import NNDatabase
 import time
 
-from nnservice import settings, thrift_util
+from nnservice import thrift_util
+from nnservice.thrift_util import get_infer_endpoint
 
 class InferServiceHandler(object):
     def __init__(self, typename=None, nn_id=None):
@@ -58,16 +59,10 @@ class InferServiceHandler(object):
         return self.service_obj.model.id
     nn_id = property(_nn_id)
 
-def get_endpoint(typename):
-    return settings.SERVICE_ENDPOINTS.get(typename, ("127.0.0.1", 10000))
-
-def make_thrift_infer_client(typename):
-    host, port = get_endpoint(typename)
-    return thrift_util.make_thrift_infer_client(Infer, host, port)
 
 def run_server(typename=None, nn_id=None):
     handler = InferServiceHandler(typename=typename, nn_id=nn_id)
-    _, port = get_endpoint(handler.typename)
+    _, port = get_infer_endpoint(handler.typename)
     thrift_util.run_server(Infer, handler, port=port)
 
 if __name__ == "__main__":

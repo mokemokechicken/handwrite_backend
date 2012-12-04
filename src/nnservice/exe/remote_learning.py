@@ -8,12 +8,10 @@ Created on 2012/12/03
 import sys
 import logging
 
-from cPickle import dumps
-
 from datacollector.import_hwdata import ImportHWData
 from nnservice.settings import DEFAULT_LARNING_OPTION
 from nnservice.nntrainer import NNTrainer
-from nnservice.nnbackend import make_thrift_backend_client
+from nnservice.thrift_util import make_thrift_backend_client
 from nnservice.repositories import NNMachineRepository
 from nnservice.db import NNDatabase
 from thrift.transport.TTransport import TTransportException

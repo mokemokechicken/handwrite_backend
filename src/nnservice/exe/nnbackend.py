@@ -22,13 +22,9 @@ class BackendServiceHandler(object):
         repo.add(nn_model)
         return True
 
-def run_server():
+def run_backend_server():
     handler = BackendServiceHandler()
     thrift_util.run_server(NNBackend, handler, port=settings.BACKEND_PORT)
 
-def make_thrift_backend_client():
-    host, port = settings.BACKEND_HOST, settings.BACKEND_PORT
-    return thrift_util.make_thrift_infer_client(NNBackend, host, port)
-
 if __name__ == '__main__':
-    run_server()
+    run_backend_server()
