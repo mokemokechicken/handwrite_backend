@@ -82,13 +82,16 @@ class NNSelector(object):
         restart_machine(m_model.name, m_model.id)
 
 if __name__ == "__main__":
-    import os, sys
+    import os, sys, fcntl
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     try:
-        fd = os.open(__file__, os.O_RDONLY|os.O_EXLOCK|os.O_NONBLOCK)
+        fd = open(__file__, "r")
+        fcntl.flock(fd, fcntl.LOCK_EX|fcntl.LOCK_NB)
         selector = NNSelector()
         selector.select_and_launch_nnmachine(sys.argv[1], 3)
-    except OSError:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        fd.close()
+    except IOError:
         logging.warn("nnselector already running, exit")
         sys.exit(1)
 
