@@ -9,6 +9,7 @@ from __future__ import with_statement
 import csv
 import gzip
 from tempfile import NamedTemporaryFile
+import logging
 
 import extapi
 from prjlib.dataset.class_sampling import ClassSampling
@@ -16,6 +17,7 @@ from cPickle import dump, HIGHEST_PROTOCOL
 from nnservice.models import LearnData
 from nnservice.repositories import LearnDataRepository
 from nnservice.db import NNDatabase
+
 
 class ImportHWData(object):
     """Web IF からデータを受信して、Theano用にフォーマット変更して保存する
@@ -33,6 +35,7 @@ class ImportHWData(object):
     
     def run_import(self):
         self.api = extapi.HWDataAPI(self.typename)
+        logging.info("getting data[%s]" % self.typename)
         body, info = self.api.get_data(multiply=self.multiply, noise_range=self.noise_range)
         reader = csv.reader(body)
         range_x = (1, info["num_in"]+1)
@@ -82,6 +85,7 @@ class ImportHWData(object):
         model.num_row = info["num_row"]
         model.data = fileobj.read()
         repo.add(model)
+        self.ld_model = model
 
     def is_updated(self):
         self.api = extapi.HWDataAPI(self.typename)

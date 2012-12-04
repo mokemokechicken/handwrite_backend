@@ -7,8 +7,6 @@ Created on 2012/11/28
 from nnservice import settings
 from nnservice.repositories import LearnDataRepository, NNMachineRepository
 from nnservice.db import NNDatabase
-from prjlib.nn.DBN import DBN
-from prjlib.nn.SdA import SdA
 from cStringIO import StringIO
 
 from prjlib.nn.learning import load_data, pretraining_model, fine_tune_model,\
@@ -20,7 +18,7 @@ import json
 from prjlib.nn.state_persistent import save_params
 import tempfile
 import logging
-from nnservice.nncommon import get_nnclass
+from nnservice.nncommon import get_nnclass, deserialize_dataset
 
 class NNTrainer(object):
     def __init__(self, typename, generation=None):
@@ -43,9 +41,7 @@ class NNTrainer(object):
     def load_learn_data(self):
         ld_model = LearnDataRepository(self.db).get(self.typename, self.generation)
         self.generation = ld_model.generation
-        ioobj = StringIO(ld_model.data)
-        dataset = load_data(ioobj)
-        ioobj.close()
+        dataset = deserialize_dataset(ld_model)
         return ld_model, dataset
     
     def get_nnmachine_type_list(self):

@@ -13,12 +13,20 @@ import json
 from prjlib.nn.state_persistent import load_params
 from cStringIO import StringIO
 import numpy
+from prjlib.nn.learning import load_data
 
 def get_nnclass(nntype):
     if nntype == "dbn":
         return DBN
     elif nntype == "sda":
         return SdA
+
+def deserialize_dataset(ld_model):
+    ioobj = StringIO(ld_model.data)
+    dataset = load_data(ioobj)
+    ioobj.close()
+    return dataset
+
 
 def build_nnmachine(nnmachine_model):
     config = json.loads(nnmachine_model.nnconfig)

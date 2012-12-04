@@ -12,7 +12,7 @@ from nnservice.db import NNDatabase
 from nnservice.repositories import NNMachineRepository
 from nnservice.models import NNMachine
 from nnservice.exe.exe_common import start_machine_if_not_started,\
-    restart_machine, stop_machine
+    restart_machine, stop_machine, start_program
 import logging
 
 class BackendServiceHandler(object):
@@ -23,6 +23,7 @@ class BackendServiceHandler(object):
         nn_model = NNMachine(name=name, num_in=num_in, num_out=num_out, nnconfig=nnconfig, score=score, data=data)
         repo = NNMachineRepository(self.db)
         repo.add(nn_model)
+        self.kick_selector(name)
         return True
     
     def infer_server_ctl(self, cmd, typename, nn_id):
@@ -36,6 +37,10 @@ class BackendServiceHandler(object):
         else:
             logging.warn("Unknown command=[%s]" % cmd)
             return False
+
+    def kick_selector(self, typename):
+        start_program("nnselector.py", typename)
+
 
 def run_backend_server():
     handler = BackendServiceHandler()

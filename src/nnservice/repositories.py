@@ -12,22 +12,23 @@ from sqlalchemy.sql.expression import func
 import datetime
 
 
-class LearnDataRepository(object):
-    modelClass= models.LearnData
-    
+class RepositoryBase(object):
     def __init__(self, database):
         """
         
         @param engine: NNDatabase object
         """
         self.db = database
-    
-    def add(self, model, session=None, autocommit=True):
-        session = session or self.db.Session()
+
+    def add(self, model):
+        session = self.db.Session()
         model.create_datetime = datetime.datetime.now()
         session.add(model)
-        if autocommit:
-            session.commit()
+        session.commit()
+        model.id
+
+class LearnDataRepository(RepositoryBase):
+    modelClass= models.LearnData
     
     def count_number_of_name(self, typename):
         session = self.db.Session()
@@ -42,18 +43,15 @@ class LearnDataRepository(object):
             q = session.query(self.modelClass).filter_by(name=typename, generation=generation).one()
         return q
 
-    
-class NNMachineRepository(object):
-    modelClass = models.NNMachine
-    
-    def __init__(self, database):
-        self.db = database
-    
-    def add(self, model):
+    def get_updated_since(self, typename, before_sec):
         session = self.db.Session()
-        model.create_datetime = datetime.datetime.now()
-        session.add(model)
-        session.commit()
+        q = session.query(self.modelClass).filter_by(name=typename).order_by(self.modelClass.generation.desc())
+        q = q.filter(self.modelClass.create_datetime > datetime.datetime.now() - datetime.timedelta(0, before_sec))
+        return q.first()
+        
+    
+class NNMachineRepository(RepositoryBase):
+    modelClass = models.NNMachine
     
     def get(self, nn_id):
         session = self.db.Session()
@@ -72,18 +70,9 @@ class NNMachineRepository(object):
         q = q.filter_by(name=typename) 
         return q
 
-class NNEvaluateRepository(object):
+class NNEvaluateRepository(RepositoryBase):
     modelClass = models.NNEvaluate
 
-    def __init__(self, database):
-        self.db = database
-    
-    def add(self, model):
-        session = self.db.Session()
-        model.create_datetime = datetime.datetime.now()
-        session.add(model)
-        session.commit()
-    
     def get_latest_evaluation(self, typename):
         session = self.db.Session()
         q = session.query(self.modelClass).filter_by(name=typename).order_by(self.modelClass.id.desc())

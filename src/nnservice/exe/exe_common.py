@@ -16,14 +16,18 @@ def restart_machine(typename, nn_id=None):
     stop_machine(typename)
     return start_machine(typename, nn_id)
 
-def start_machine(typename=None, nn_id=None):
-    args = ["python", "%s/nnserver.py" % THIS_DIR, nn_id or typename]
-    subprocess.Popen(args, env=os.environ)
+def start_program(script_name, *args):
+    exe_args = ["python", "%s/%s" % (THIS_DIR, script_name)]
+    exe_args.extend([str(x) for x in args])
+    subprocess.Popen(exe_args, env=os.environ)
     return True
 
+def start_machine(typename=None, nn_id=None):
+    return start_program("nnserver.py", nn_id or typename)
+
 def stop_machine(typename):
-    client = make_thrift_infer_client(typename)
     try:
+        client = make_thrift_infer_client(typename)
         client.ping()
     except TTransportException:
         return False

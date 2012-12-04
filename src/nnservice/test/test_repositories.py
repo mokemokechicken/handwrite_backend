@@ -107,6 +107,7 @@ class NNEvaluateRepositoryTest(TestCase):
             l_repo.add(l_model)
             e_repo.add(NNEvaluate(name=name, learn_data_id=l_model.id))
         e_model = e_repo.get_latest_evaluation(name)
+        self.assertIsNotNone(e_model)
         self.assertEquals(3, e_model.id)
         self.assertEquals(3, e_model.learn_data_id)
         
@@ -115,3 +116,22 @@ class NNEvaluateRepositoryTest(TestCase):
         e_model = e_repo.get_latest_evaluation("hoge")
         self.assertEquals(None, e_model)
     
+    def test_check_related_results(self):
+        l_repo = LearnDataRepository(self.db)
+        m_repo = NNMachineRepository(self.db)
+        e_repo = NNEvaluateRepository(self.db)
+        name = "hoge"
+        machines = [NNMachine(name=name) for _ in range(5)]
+        for m in machines:
+            m_repo.add(m)
+
+        l_model = LearnData(name=name)
+        l_repo.add(l_model)
+        e_model = NNEvaluate(name=name, learn_data_id=l_model.id)
+        e_repo.add(e_model)
+        for m in machines[1:]:
+            er_model = NNEvaluateResult(nneval_id=e_model.id, nn_id=m.id, score=0.2)
+            e_repo.add(er_model)
+        
+        e_model2 = e_repo.get_latest_evaluation(name)
+        self.assertEquals(4, len(e_model2.results))
