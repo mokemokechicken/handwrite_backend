@@ -88,7 +88,6 @@ if __name__ == "__main__":
         fd = os.open(__file__, os.O_RDONLY|os.O_EXLOCK|os.O_NONBLOCK)
         selector = NNSelector()
         selector.select_and_launch_nnmachine(sys.argv[1], 3)
-        fd.close()
     except OSError:
         logging.warn("nnselector already running, exit")
         sys.exit(1)
