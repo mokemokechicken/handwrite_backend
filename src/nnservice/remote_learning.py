@@ -1,7 +1,7 @@
 # coding: utf8
-'''
-Created on 2012/12/03
+'''学習データを外部から取得して、学習を行い、学習結果のNNMachineをNNBackendに送信する
 
+Created on 2012/12/03
 @author: k_morishita
 '''
 

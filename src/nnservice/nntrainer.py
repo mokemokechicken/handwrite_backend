@@ -1,7 +1,7 @@
 # coding: utf8
-'''
-Created on 2012/11/28
+'''NNMachineの学習を実際に行う
 
+Created on 2012/11/28
 @author: k_morishita
 '''
 from nnservice import settings

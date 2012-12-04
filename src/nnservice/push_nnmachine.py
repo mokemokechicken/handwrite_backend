@@ -1,7 +1,7 @@
 # coding: utf8
-'''
-Created on 2012/12/03
+'''Localのnn_idで表されるNNMachineをNNBackendに送信する
 
+Created on 2012/12/03
 @author: k_morishita
 '''
 
