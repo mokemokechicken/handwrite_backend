@@ -24,7 +24,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print ''
   print 'Functions:'
   print '   infer( input)'
-  print '  bool update_nnmachine(i64 nn_id)'
   print '  string version()'
   print '  void halt()'
   print '  bool ping()'
@@ -84,12 +83,6 @@ if cmd == 'infer':
     print 'infer requires 1 args'
     sys.exit(1)
   pp.pprint(client.infer(eval(args[0]),))
-
-elif cmd == 'update_nnmachine':
-  if len(args) != 1:
-    print 'update_nnmachine requires 1 args'
-    sys.exit(1)
-  pp.pprint(client.update_nnmachine(eval(args[0]),))
 
 elif cmd == 'version':
   if len(args) != 0:

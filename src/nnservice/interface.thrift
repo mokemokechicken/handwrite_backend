@@ -1,7 +1,7 @@
 
 service Infer {
     list <double> infer(1:list <double> input)
-    bool update_nnmachine(1:i64 nn_id)
+//    bool update_nnmachine(1:i64 nn_id)
     string version()
     oneway void halt()
     bool ping()

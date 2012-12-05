@@ -33,6 +33,7 @@ class NNDatabase(object):
     metadata = None
     _conn = None
     _Session = None
+    _session = None
     
     def __init__(self, **kw):
         self.engine = create_nnservice_engine(**kw)
@@ -59,9 +60,16 @@ class NNDatabase(object):
         return self._Session
     Session = property(_get_Session)
     
+    def _get_session(self):
+        if self._session is None:
+            self._session = self.Session()
+        return self._session
+    session = property(_get_session)
+    
     def close(self):
-        pass
-        
+        if self._session:
+            self._session.close()
+
     
 
 if __name__ == '__main__':

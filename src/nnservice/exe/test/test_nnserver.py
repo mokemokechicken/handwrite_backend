@@ -20,6 +20,8 @@ from ymlib.unittest.misc import relative_package
 
 from mock import patch
 
+import sys
+
 class InferServiceHandlerTest(TestCase):
     def setUp(self):
         self.db = NNDatabase(connection="sqlite://")
@@ -51,8 +53,28 @@ class InferServiceHandlerTest(TestCase):
         self.assertEquals(100, r["out"])
         self.assertEquals([30,30], r["hiddens"])
         self.assertEquals("rbm", r["nntype"])
+    
+    @patch("sys.exit", return_value=True)
+    def test_halt(self, mock_exit):
+        obj = self.create_handler()
+        obj.halt()
+        mock_exit.assert_called_with(0)
         
     
-        
-        
-        
+    def test_infer(self):
+        obj = self.create_handler()
+        obj.service_obj.infer.return_value = ([0.1], [0.2])
+        xs = [0] * obj.service_obj.model.num_in
+        ys = obj.infer(xs)
+        self.assertEquals([0.2], ys)
+        obj.service_obj.infer.assert_called_with(xs)
+    
+    @patch("logging.warn", return_value="called")
+    def test_infer_checkerror(self, warn_mock):
+        obj = self.create_handler()
+        self.assertEquals([], obj.infer([1]))
+        self.assertEquals(True, warn_mock.called)
+
+    def test_ping(self):
+        obj = self.create_handler()
+        self.assertEquals(True, obj.ping())

@@ -36,6 +36,7 @@ class LearnDataRepositoryTest(TestCase):
         model.create_datetime = dt
         self.obj.add(model)
         
+        self.obj.session.close()
         session = self.db.Session()
         q = session.query(LearnData).all()
         self.assertEquals(1, len(q))

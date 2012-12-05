@@ -25,13 +25,6 @@ class Iface:
     """
     pass
 
-  def update_nnmachine(self, nn_id):
-    """
-    Parameters:
-     - nn_id
-    """
-    pass
-
   def version(self, ):
     pass
 
@@ -78,36 +71,6 @@ class Client(Iface):
     if result.success is not None:
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "infer failed: unknown result");
-
-  def update_nnmachine(self, nn_id):
-    """
-    Parameters:
-     - nn_id
-    """
-    self.send_update_nnmachine(nn_id)
-    return self.recv_update_nnmachine()
-
-  def send_update_nnmachine(self, nn_id):
-    self._oprot.writeMessageBegin('update_nnmachine', TMessageType.CALL, self._seqid)
-    args = update_nnmachine_args()
-    args.nn_id = nn_id
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_update_nnmachine(self, ):
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(self._iprot)
-      self._iprot.readMessageEnd()
-      raise x
-    result = update_nnmachine_result()
-    result.read(self._iprot)
-    self._iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "update_nnmachine failed: unknown result");
 
   def version(self, ):
     self.send_version()
@@ -174,7 +137,6 @@ class Processor(Iface, TProcessor):
     self._handler = handler
     self._processMap = {}
     self._processMap["infer"] = Processor.process_infer
-    self._processMap["update_nnmachine"] = Processor.process_update_nnmachine
     self._processMap["version"] = Processor.process_version
     self._processMap["halt"] = Processor.process_halt
     self._processMap["ping"] = Processor.process_ping
@@ -201,17 +163,6 @@ class Processor(Iface, TProcessor):
     result = infer_result()
     result.success = self._handler.infer(args.input)
     oprot.writeMessageBegin("infer", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_update_nnmachine(self, seqid, iprot, oprot):
-    args = update_nnmachine_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = update_nnmachine_result()
-    result.success = self._handler.update_nnmachine(args.nn_id)
-    oprot.writeMessageBegin("update_nnmachine", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -364,125 +315,6 @@ class infer_result:
       for iter13 in self.success:
         oprot.writeDouble(iter13)
       oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class update_nnmachine_args:
-  """
-  Attributes:
-   - nn_id
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.I64, 'nn_id', None, None, ), # 1
-  )
-
-  def __init__(self, nn_id=None,):
-    self.nn_id = nn_id
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.I64:
-          self.nn_id = iprot.readI64();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('update_nnmachine_args')
-    if self.nn_id is not None:
-      oprot.writeFieldBegin('nn_id', TType.I64, 1)
-      oprot.writeI64(self.nn_id)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class update_nnmachine_result:
-  """
-  Attributes:
-   - success
-  """
-
-  thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
-  )
-
-  def __init__(self, success=None,):
-    self.success = success
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('update_nnmachine_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

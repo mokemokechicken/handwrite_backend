@@ -5,7 +5,10 @@ Created on 2012/11/29
 @author: k_morishita
 '''
 
+import sys
+import time
 import logging
+import json
 
 from nnservice.interface import Infer
 #from nnservice.interface.ttypes import *
@@ -13,10 +16,8 @@ from nnservice.interface import Infer
 from nnservice.nninfer import NNInfer
 from nnservice.repositories import NNMachineRepository, NNEvaluateRepository
 from nnservice.db import NNDatabase
-import time
 
 from nnservice import thrift_util
-import json
 
 class InferServiceHandler(object):
     def __init__(self, typename=None, nn_id=None, database=None):
@@ -32,7 +33,7 @@ class InferServiceHandler(object):
 
     def infer(self, xs):
         if self.service_obj.model.num_in != len(xs):
-            logging.error("error length %d != %d" % (self.service_obj.model.num_in, len(xs)))
+            logging.warn("error length %d != %d" % (self.service_obj.model.num_in, len(xs)))
             return []
         start_time = time.time()
         y, ys = self.service_obj.infer(xs)
@@ -55,14 +56,14 @@ class InferServiceHandler(object):
         logging.info("version: %s" % ret)
         return json.dumps(ret)
     
-    def update_nnmachine(self, nn_id):
-        cur_id = self.nn_id
-        if nn_id == 0:
-            self.service_obj = NNInfer.best_machine(typename=self.typename)
-        else:
-            self.build_machine(nn_id)
-        logging.info("reload nn_id=%s" % self.nn_id)
-        return cur_id != self.nn_id
+#    def update_nnmachine(self, nn_id):
+#        cur_id = self.nn_id
+#        if nn_id == 0:
+#            self.service_obj = NNInfer.best_machine(typename=self.typename)
+#        else:
+#            self.build_machine(nn_id)
+#        logging.info("reload nn_id=%s" % self.nn_id)
+#        return cur_id != self.nn_id
     
     def halt(self):
         logging.info("halt")
