@@ -11,21 +11,23 @@ from nnservice.interface import Infer
 #from nnservice.interface.ttypes import *
 
 from nnservice.nninfer import NNInfer
-from nnservice.repositories import NNMachineRepository
+from nnservice.repositories import NNMachineRepository, NNEvaluateRepository
 from nnservice.db import NNDatabase
 import time
 
 from nnservice import thrift_util
+import json
 
 class InferServiceHandler(object):
-    def __init__(self, typename=None, nn_id=None):
+    def __init__(self, typename=None, nn_id=None, database=None):
+        self.db = database or NNDatabase()
         if nn_id is None:
             self.service_obj = NNInfer.best_machine(typename=typename)
         else:
             self.build_machine(nn_id)
 
     def build_machine(self, nn_id):
-        nn_model = NNMachineRepository(NNDatabase()).get(nn_id)
+        nn_model = NNMachineRepository(self.db).get(nn_id)
         self.service_obj = NNInfer(nn_model).setup_nnmachine()
 
     def infer(self, xs):
@@ -36,6 +38,22 @@ class InferServiceHandler(object):
         y, ys = self.service_obj.infer(xs)
         logging.info("infer %s (%f msec)" % (y, (time.time() - start_time)*1000)) 
         return ys
+    
+    def version(self):
+        nn_model = self.service_obj.model
+        nnconfig = json.loads(nn_model.nnconfig)
+        e_repo = NNEvaluateRepository(self.db)
+        er_model = e_repo.get_latest_eval_result(nn_model)
+        ret = {
+               "typename": nn_model.name,
+               "in": nn_model.num_in,
+               "out": nn_model.num_out,
+               "score": er_model and er_model.score or -1,
+               "hiddens": nnconfig.get("hiddens"),
+               "nntype": nnconfig.get("type"),
+               }
+        logging.info("version: %s" % ret)
+        return json.dumps(ret)
     
     def update_nnmachine(self, nn_id):
         cur_id = self.nn_id

@@ -72,9 +72,19 @@ class NNMachineRepository(RepositoryBase):
 
 class NNEvaluateRepository(RepositoryBase):
     modelClass = models.NNEvaluate
+    detailClass = models.NNEvaluateResult
 
     def get_latest_evaluation(self, typename):
         session = self.db.Session()
         q = session.query(self.modelClass).filter_by(name=typename).order_by(self.modelClass.id.desc())
         return q.first()
 
+    def get_latest_eval_result(self, m_model):
+        """NNMachineに関する最新の評価結果を返す。まだ評価がなければNoneを返す。
+        
+        @param NNMachine m_model
+        @return NNEvaluateResult
+        """
+        session = self.db.Session()
+        q = session.query(self.detailClass).filter_by(nn_id=m_model.id).order_by(self.detailClass.id.desc())
+        return q.first()
