@@ -31,9 +31,8 @@ def run_server(klass, handler, host=None, port=None):
     server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
     handler.server = server
      
-    print "Starting server"
+    print "Starting server: %s" % (repr(handler))
     server.serve()
-    print "done!"
 
 def get_infer_endpoint(typename):
     return settings.SERVICE_ENDPOINTS.get(typename, ("127.0.0.1", 10000))

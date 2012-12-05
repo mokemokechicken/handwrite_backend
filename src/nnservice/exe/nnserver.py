@@ -81,6 +81,8 @@ class InferServiceHandler(object):
         return self.service_obj.model.id
     nn_id = property(_nn_id)
 
+    def __repr__(self):
+        return repr(self.service_obj.model)
 
 def run_infer_server(typename=None, nn_id=None):
     handler = InferServiceHandler(typename=typename, nn_id=nn_id)
