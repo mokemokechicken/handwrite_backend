@@ -46,12 +46,14 @@ class InferServiceHandler(object):
         e_repo = NNEvaluateRepository(self.db)
         er_model = e_repo.get_latest_eval_result(nn_model)
         ret = {
+               "id": nn_model.id,
                "typename": nn_model.name,
                "in": nn_model.num_in,
                "out": nn_model.num_out,
                "score": er_model and er_model.score or -1,
                "hiddens": nnconfig.get("hiddens"),
                "nntype": nnconfig.get("type"),
+               "created_at": str(nn_model.create_datetime),
                }
         logging.info("version: %s" % ret)
         return json.dumps(ret)
