@@ -29,9 +29,10 @@ class ImportHWData(object):
     multiply = None       # データの水増し廖
     noise_range = None    # わざとブレさせる倍率幅。 [0.9,1.1] などのように範囲で指定。
     
-    def __init__(self, typename, dbconf={}):
+    def __init__(self, typename, dbconf={}, split_rate=None):
         self.typename = typename
         self.db = NNDatabase(**dbconf)
+        self.split_rate = split_rate or [8,1,1]
     
     def run_import(self):
         self.api = extapi.HWDataAPI(self.typename)
@@ -41,7 +42,7 @@ class ImportHWData(object):
         range_x = (1, info["num_in"]+1)
         index_y = info["num_in"]+1
         with ClassSampling() as cs:
-            trainset, validateset, testset = cs.sampling(reader, [8,1,1], (index_y, index_y+1))
+            trainset, validateset, testset = cs.sampling(reader, self.split_rate, (index_y, index_y+1))
             out_array = []
             self.serialize(out_array, trainset, range_x, index_y)
             self.serialize(out_array, validateset, range_x, index_y)

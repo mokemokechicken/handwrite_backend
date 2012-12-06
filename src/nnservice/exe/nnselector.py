@@ -55,7 +55,7 @@ class NNSelector(object):
         late_model = LearnDataRepository(self.db).get_updated_since(typename, before_sec)
         if late_model:
             return late_model
-        importer = ImportHWData(typename)
+        importer = ImportHWData(typename, split_rate=[1,1,100])
         importer.multiply = 3
         importer.run_import()
         return importer.ld_model
@@ -63,7 +63,7 @@ class NNSelector(object):
     def evaluate_machine(self, m_model, l_model):
         machine = build_nnmachine(m_model)
         dataset = deserialize_dataset(l_model)
-        v_loss, t_loss = evaluate_model(machine, dataset)
+        _, t_loss = evaluate_model(machine, dataset)
         r_model = NNEvaluateResult(nn_id=m_model.id, score=t_loss)
         return r_model
 
@@ -82,7 +82,7 @@ class NNSelector(object):
         restart_machine(m_model.name, m_model.id)
 
 if __name__ == "__main__":
-    import os, sys, fcntl
+    import sys, fcntl
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     try:
         fd = open(__file__, "r")

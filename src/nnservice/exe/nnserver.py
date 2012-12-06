@@ -95,7 +95,6 @@ def run_infer_server(typename=None, nn_id=None):
     thrift_util.run_server(Infer, handler, port=port)
 
 if __name__ == "__main__":
-    import sys
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     typename = nn_id = None
     try:
