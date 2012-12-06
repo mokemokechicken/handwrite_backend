@@ -45,12 +45,15 @@ class InferServiceHandler(object):
         nnconfig = json.loads(nn_model.nnconfig)
         e_repo = NNEvaluateRepository(self.db)
         er_model = e_repo.get_latest_eval_result(nn_model)
+        score = -1
+        if er_model:
+            score = er_model.score
         ret = {
                "id": nn_model.id,
                "typename": nn_model.name,
                "in": nn_model.num_in,
                "out": nn_model.num_out,
-               "score": er_model and er_model.score or -1,
+               "score": score,
                "hiddens": nnconfig.get("hiddens"),
                "nntype": nnconfig.get("type"),
                "created_at": str(nn_model.create_datetime),
