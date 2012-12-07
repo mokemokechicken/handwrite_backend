@@ -22,7 +22,7 @@ def run(typename_list):
         logging.info("run: [%s]" % typename)
         update_machine(typename)
 
-def update_machine(typename):
+def update_machine(typename, force=False):
     ip = ImportHWData(typename)
     ip.multiply = DEFAULT_LARNING_OPTION.get("data_multiply", 10)
     ip.noise_range = DEFAULT_LARNING_OPTION.get("data_noise_range", [0.9,1.1])

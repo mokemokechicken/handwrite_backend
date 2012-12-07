@@ -189,6 +189,11 @@ def fine_tune_model(dbn, datasets, training_epochs, batch_size, finetune_lr=0.1,
                           (epoch, minibatch_index + 1, n_train_batches,
                            test_score * 100.))
 
+                if this_validation_loss == 0.:
+                    done_looping = True
+                    log("ValidationLoss == 0!!")
+                    break
+
             if patience <= iter_idx:
                 done_looping = True
                 log("Over patience!!")
