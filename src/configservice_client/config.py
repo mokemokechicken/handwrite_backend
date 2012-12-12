@@ -11,7 +11,7 @@ import time
 
 from configservice_client.client import ConfigClient
 
-CONFIG_SERVER_URL = "http://localhost:8000/config"
+CONFIG_SERVER_URL = "http://54.248.76.99:7777/config"
 
 _CONFIG_CACHE = {}
 _CONFIG_CACHE_TIME = {}
