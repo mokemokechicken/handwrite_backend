@@ -7,18 +7,20 @@ Created on 2012/11/26
 
 import urllib2
 import gzip
-import logging
-from nnservice import settings
 import tempfile
 import urllib
 import json
+
+from configservice_client.config import load_config
+
 
 class ExtAPIBase(object):
     typename = None
     def __init__(self, typename=None, endpoint = None, timeout=7200):
         self.typename = typename or self.typename
-        self.endpoint = endpoint or settings.ENDPOINTS[self.typename]
+        self.endpoint = endpoint or load_config(self.typename)["data_server_url"]
         self.timeout = timeout
+        
     
     def _fetch_data(self, apitype, params=None):
         """

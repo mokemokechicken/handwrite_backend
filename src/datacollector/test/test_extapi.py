@@ -11,10 +11,12 @@ from mock import patch
 from ..extapi import HWDataAPI
 from _pyio import StringIO
 import json
+from ymlib.unittest.misc import relative_package
 
 
 class HWDataAPITest(TestCase):
-    def setUp(self):
+    @patch(relative_package("..extapi.load_config", __package__), return_value={"data_server_url": ""})
+    def setUp(self, m):
         self.api = HWDataAPI("numbers")
     
     def test_get_data_with_params(self):

@@ -11,6 +11,7 @@ from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 from nnservice import settings
 from nnservice.interface import NNBackend, Infer
+from configservice_client.config import load_config
 
 def make_thrift_client(klass, host,  port):
     # Make socket
@@ -35,7 +36,9 @@ def run_server(klass, handler, host=None, port=None):
     server.serve()
 
 def get_infer_endpoint(typename):
-    return settings.SERVICE_ENDPOINTS.get(typename, ("127.0.0.1", 10000))
+    config = load_config(typename)
+    return (config["infer_server_host"], config["infer_server_port"])
+    # return settings.SERVICE_ENDPOINTS.get(typename, ("127.0.0.1", 10000))
 
 def make_thrift_infer_client(typename):
     host, port = get_infer_endpoint(typename)
