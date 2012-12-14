@@ -19,7 +19,7 @@ def restart_machine(typename, nn_id=None):
 def start_program(script_name, *args):
     exe_args = ["python", "%s/%s" % (THIS_DIR, script_name)]
     exe_args.extend([str(x) for x in args])
-    subprocess.Popen(exe_args, env=os.environ)
+    subprocess.Popen(exe_args, env=os.environ, close_fds=True)
     return True
 
 def start_machine(typename=None, nn_id=None):
