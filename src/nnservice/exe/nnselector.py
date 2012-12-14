@@ -65,6 +65,8 @@ class NNSelector(object):
         dataset = deserialize_dataset(l_model)
         _, t_loss = evaluate_model(machine, dataset)
         r_model = NNEvaluateResult(nn_id=m_model.id, score=t_loss)
+        del dataset
+        del machine
         return r_model
 
     def find_fine_machines_and_non_eval_machines(self, e_model, candidate_num):
